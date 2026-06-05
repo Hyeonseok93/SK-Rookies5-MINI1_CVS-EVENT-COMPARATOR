@@ -240,3 +240,11 @@ python utils/data_categorize.py
 | 마커 클러스터 기능을 활용한 사용자 위치 기반 주변 4대 편의점 위치 매핑 시각화 | Groq Llama-3 기반으로 실시간 맥락 파악 및 상품 매칭, 페어링 가이드 제공 |
 
 ---
+
+&nbsp;
+## 💻 Developers
+
+| <a href="https://github.com/Engineer-kim" target="_blank"><img width="120" height="120" src="https://github.com/Hyeonseok93.png" /></a> | <a href="https://github.com/Hyeonseok93" target="_blank"><img width="120" height="120" src="https://github.com/Hyeonseok93.png" /></a> | <a href="https://github.com/hongjiho5148" target="_blank"><img width="120" height="120" src="https://github.com/hongjiho5148.png" /></a> | <a href="https://github.com/owhat02" target="_blank"><img width="120" height="120" src="https://github.com/owhat02" /></a> | <a href="https://github.com/seoyeon020" target="_blank"><img width="120" height="120" src="https://github.com/seoyeon020.png" /></a> | <a href="https://github.com/siyeon04" target="_blank"><img width="120" height="120" src="https://github.com/siyeon04" /></a> |
+|:-------------:|:------:|:------:|:------:|:------:|:------:|
+| [김한진(팀장)]([https://github.com/Engineer-kim) | [김현석](https://github.com/Hyeonseok93) | [홍지호](https://github.com/hongjiho5148) | [이새연](https://github.com/owhat02) | [임서연](https://github.com/seoyeon020) | [이시연](https://github.com/siyeon04) |
+
