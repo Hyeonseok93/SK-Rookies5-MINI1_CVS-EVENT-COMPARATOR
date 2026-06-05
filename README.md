@@ -39,40 +39,40 @@
 ```mermaid
 graph TD
     %% Scraper Layer
-    subgraph Crawling & Scraping
-        CU[CU Scraper] -->|Raw Data| CU_CSV[(CU Raw CSV)]
-        GS[GS25 Scraper] -->|Raw Data| GS_CSV[(GS25 Raw CSV)]
-        SE[7-Eleven Scraper] -->|Raw Data| SE_CSV[(7-Eleven Raw CSV)]
-        EM[emart24 Scraper] -->|Raw Data| EM_CSV[(emart24 Raw CSV)]
+    subgraph scraping["Crawling & Scraping"]
+        CU["CU Scraper"] -->|Raw Data| CU_CSV[("CU Raw CSV")]
+        GS["GS25 Scraper"] -->|Raw Data| GS_CSV[("GS25 Raw CSV")]
+        SE["7-Eleven Scraper"] -->|Raw Data| SE_CSV[("7-Eleven Raw CSV")]
+        EM["emart24 Scraper"] -->|Raw Data| EM_CSV[("emart24 Raw CSV")]
     end
 
     %% Batch / Clean Layer
-    subgraph Data Pipeline
-        Scheduler[APScheduler Manager] -->|Trigger| Run[crawl_batch_script.py]
-        Run --> Crawling & Scraping
-        CU_CSV & GS_CSV & SE_CSV & EM_CSV -->|Data Cleansing| Cleaner[data_cleaner.py]
-        Cleaner -->|Formatted Raw| CleanCSV[(cleaned_data.csv)]
-        CleanCSV -->|Text-based NLP Classification| Categorizer[data_categorize.py]
-        Categorizer -->|Final Database| FinalCSV[(categorized_data.csv)]
+    subgraph pipeline["Data Pipeline"]
+        Scheduler["APScheduler Manager"] -->|Trigger| Run["crawl_batch_script.py"]
+        Run --> scraping
+        CU_CSV & GS_CSV & SE_CSV & EM_CSV -->|Data Cleansing| Cleaner["data_cleaner.py"]
+        Cleaner -->|Formatted Raw| CleanCSV[("cleaned_data.csv")]
+        CleanCSV -->|Text-based NLP Classification| Categorizer["data_categorize.py"]
+        Categorizer -->|Final Database| FinalCSV[("categorized_data.csv")]
     end
 
     %% Application Layer
-    subgraph Dashboard Application (Streamlit)
-        FinalCSV -->|Load| Main[app.py / st.navigation]
+    subgraph application["Dashboard Application (Streamlit)"]
+        FinalCSV -->|Load| Main["app.py / st.navigation"]
 
         %% Features
-        Main --> Home[00_home: 추천 & 실시간 뉴스]
-        Main --> Summary[01_overall_summary: 전체 요약 & 필터]
-        Main --> Compare[02_brand_comparison: 브랜드 비교 & Plotly 시각화]
-        Main --> BestVal[03_best_value: 가성비 TOP 50]
-        Main --> Budget[04_budget_combination: 예산 맞춤 조합 생성]
-        Main --> Diet[05_diet_guide: 식단 & 다이어트 가이드]
-        Main --> Night[06_night_snack_guide: 야식 & 안주 가이드]
-        Main --> Map[07_convenience_store_map: 편의점 지도]
-        Main --> Game[08_random_picker & 09_jackpot_game]
+        Main --> Home["00_home: 추천 & 실시간 뉴스"]
+        Main --> Summary["01_overall_summary: 전체 요약 & 필터"]
+        Main --> Compare["02_brand_comparison: 브랜드 비교 & Plotly 시각화"]
+        Main --> BestVal["03_best_value: 가성비 TOP 50"]
+        Main --> Budget["04_budget_combination: 예산 맞춤 조합 생성"]
+        Main --> Diet["05_diet_guide: 식단 & 다이어트 가이드"]
+        Main --> Night["06_night_snack_guide: 야식 & 안주 가이드"]
+        Main --> Map["07_convenience_store_map: 편의점 지도"]
+        Main --> Game["08_random_picker & 09_jackpot_game"]
 
         %% Chatbot
-        Main --> Chatbot[utils/chatbot.py: Groq Llama-3 RAG Chat]
+        Main --> Chatbot["utils/chatbot.py: Groq Llama-3 RAG Chat"]
         FinalCSV -->|Keyword RAG Context| Chatbot
     end
 
