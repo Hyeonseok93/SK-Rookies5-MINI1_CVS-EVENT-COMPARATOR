@@ -242,7 +242,7 @@ python utils/data_categorize.py
 ---
 
 &nbsp;
-## 💻 Developers
+## 💻 개발자 (Developers)
 
 | <a href="https://github.com/Engineer-kim" target="_blank"><img width="120" height="120" src="https://github.com/Engineer-kim.png" /></a> | <a href="https://github.com/Hyeonseok93" target="_blank"><img width="120" height="120" src="https://github.com/Hyeonseok93.png" /></a> | <a href="https://github.com/hongjiho5148" target="_blank"><img width="120" height="120" src="https://github.com/hongjiho5148.png" /></a> | <a href="https://github.com/owhat02" target="_blank"><img width="120" height="120" src="https://github.com/owhat02.png" /></a> | <a href="https://github.com/seoyeon020" target="_blank"><img width="120" height="120" src="https://github.com/seoyeon020.png" /></a> | <a href="https://github.com/siyeon04" target="_blank"><img width="120" height="120" src="https://github.com/siyeon04.png" /></a> |
 |:-------------:|:------:|:------:|:------:|:------:|:------:|
