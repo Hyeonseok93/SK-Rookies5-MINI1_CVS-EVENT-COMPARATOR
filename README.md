@@ -95,9 +95,7 @@ conv-dashboard/
 ┃   ┣━━ 🖼️ logo_cu.png              # CU 브랜드 로고
 ┃   ┣━━ 🖼️ logo_gs25.png            # GS25 브랜드 로고
 ┃   ┣━━ 🖼️ logo_7eleven.png         # 세븐일레븐 브랜드 로고
-┃   ┣━━ 🖼️ logo_emart24.png         # 이마트24 브랜드 로고
-┃   ┣━━ 🖼️ brandname_visual.png     # 브랜드 통계 차트 이미지
-┃   ┗━━ 🖼️ graph.png                # 가격 통계 분석 그래프
+┃   ┗━━ 🖼️ logo_emart24.png         # 이마트24 브랜드 로고
 ┣━━ 📂 batch/                       # 데이터 수집 자동화 및 스케줄러
 ┃   ┣━━ 📂 script/
 ┃   ┃   ┗━━ 📄 crawl_batch_script.py # 통합 크롤링 및 정제 실행 자동화 스크립트

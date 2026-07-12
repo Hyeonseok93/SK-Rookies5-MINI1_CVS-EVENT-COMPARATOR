@@ -46,22 +46,8 @@ def scrape_gs25_event_goods():
         time.sleep(0.5)
         
     if gs25_data_list:
-        df = pd.DataFrame(gs25_data_list)
-        raw_count = len(df)
-        df.drop_duplicates(subset=['name', 'event'], keep='first', inplace=True)
-        
-        file_date_str = datetime.now().strftime("%y%m%d")
-        csv_filename = f'GS25_{file_date_str}.csv'
-        os.makedirs("data", exist_ok=True)
-        file_path = os.path.join("data", csv_filename)
-        df.to_csv(file_path, index=False, encoding='utf-8-sig')
-        
-        duration = datetime.now() - start_ts
-        print(f"\n최종 결과 요약:")
-        print(f" - 전체 수집 개수: {raw_count}")
-        print(f" - 중복 제거 후  : {len(df)}")
-        print(f" - 저장 파일명   : {file_path}")
-        print(f" - 소요 시간     : {duration.seconds // 60}분 {duration.seconds % 60}초")
+        from scraper.base import save_products
+        save_products(pd.DataFrame(gs25_data_list), 'GS25', start_ts=start_ts)
     else:
         print("❌ 수집된 데이터가 없습니다.")
 

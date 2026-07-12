@@ -3,17 +3,17 @@ import pandas as pd
 import os
 from groq import Groq
 from dotenv import load_dotenv
-import time
+
+from utils.paths import categorized_path
 
 load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key) if api_key else None
 
 
-# CSV 데이터 로드
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_chatbot_data():
-    path = os.path.join("data", "categorized_data.csv")
+    path = categorized_path()
     if os.path.exists(path):
         return pd.read_csv(path)
     return pd.DataFrame()
@@ -31,36 +31,37 @@ def show_chatbot():
             }
         ]
 
-    # 기존 UI 스타일 유지
+    # Scope FAB styles to the chatbot popover only (sibling of #cvs-chatbot-anchor)
     st.markdown("""
+    <div id="cvs-chatbot-anchor"></div>
     <style>
-    div[data-testid="stPopover"] {
-        position: fixed !important; 
-        bottom: 30px !important; 
-        right: 30px !important; 
-        width: 65px !important; 
-        height: 65px !important; 
+    div.element-container:has(#cvs-chatbot-anchor) + div.element-container div[data-testid="stPopover"] {
+        position: fixed !important;
+        bottom: 30px !important;
+        right: 30px !important;
+        width: 65px !important;
+        height: 65px !important;
         z-index: 999999 !important;
     }
-    div[data-testid="stPopover"] > button {
-        width: 65px !important; 
-        height: 65px !important; 
-        border-radius: 50% !important; 
-        background-color: #007bff !important; 
-        color: white !important; 
-        border: none !important; 
+    div.element-container:has(#cvs-chatbot-anchor) + div.element-container div[data-testid="stPopover"] > button {
+        width: 65px !important;
+        height: 65px !important;
+        border-radius: 50% !important;
+        background-color: #007bff !important;
+        color: white !important;
+        border: none !important;
         font-size: 30px !important;
     }
-    div[data-testid="stPopoverBody"] {
-        position: fixed !important; 
-        bottom: 110px !important; 
-        right: 30px !important; 
-        width: 380px !important; 
-        height: 550px !important; 
-        background-color: #1c2128 !important; 
+    div.element-container:has(#cvs-chatbot-anchor) + div.element-container div[data-testid="stPopoverBody"] {
+        position: fixed !important;
+        bottom: 110px !important;
+        right: 30px !important;
+        width: 380px !important;
+        height: 550px !important;
+        background-color: #1c2128 !important;
         border: 1px solid #30363d !important;
-        border-radius: 20px !important; 
-        padding: 10px !important; 
+        border-radius: 20px !important;
+        padding: 10px !important;
         overflow: hidden !important;
     }
     .stChatFloatingInputContainer {
@@ -100,16 +101,13 @@ def show_chatbot():
                         context = ""
 
                         if not df.empty:
-                            # [핵심 수정] 검색어 최적화: 사용자의 질문 키워드가 포함된 데이터 우선 필터링
                             keywords = prompt.split()
                             search_query = "|".join(keywords)
-                            # 이름(name)이나 카테고리(category)에서 키워드 검색
                             filtered_df = df[df['name'].str.contains(search_query, case=False, na=False) |
                                              df['category'].str.contains(search_query, case=False, na=False)]
 
-                            # 검색 결과가 있으면 검색 결과를, 없으면 랜덤 샘플을 사용
                             if not filtered_df.empty:
-                                target_df = filtered_df.head(20)  # 관련 상품 최대 20개 전달
+                                target_df = filtered_df.head(20)
                             else:
                                 target_df = df.sample(n=min(15, len(df)))
 

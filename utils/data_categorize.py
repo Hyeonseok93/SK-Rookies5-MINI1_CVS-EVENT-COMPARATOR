@@ -21,8 +21,6 @@ def classify_product(name):
     ]
     if any(word in name for word in misc_keywords):
         return "기타"
-    if any(word in name for word in misc_keywords):
-        return "기타"
 
     household = [
         '샴푸', '린스', '컨디셔너', '엘라스틴', '세제', '제습제', '페브리즈', '순한면', '쏘피',
@@ -102,27 +100,31 @@ def classify_product(name):
     return "기타" # 위에 해당하지 않는 모든 것은 기타로 분류
 
 def run_categorization():
+    from utils.paths import cleaned_path, categorized_path
+
     logger.info("새로운 키워드로 카테고리 분류를 시작합니다.")
-    input_path = 'data/cleaned_data.csv'
-    output_path = 'data/categorized_data.csv'
-    
+    input_path = cleaned_path()
+    output_path = categorized_path()
+
     if not os.path.exists(input_path):
         logger.error(f"'{input_path}' 파일이 없습니다. 정제 코드를 먼저 실행하세요.")
         return
 
     try:
         df = pd.read_csv(input_path, encoding='utf-8-sig')
-        
+
         # 카테고리 분류 적용
         df['category'] = df['name'].apply(classify_product)
-        
-        # 결과 저장
-        df.to_csv(output_path, index=False, encoding='utf-8-sig')
-        
+
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        tmp_path = output_path + ".tmp"
+        df.to_csv(tmp_path, index=False, encoding='utf-8-sig')
+        os.replace(tmp_path, output_path)
+
         logger.success(f"분류 완료: '{output_path}'에 저장되었습니다.")
         print("\n[ 카테고리별 데이터 분포 ]")
         print(df['category'].value_counts())
-        
+
     except Exception as e:
         logger.error(f"분류 작업 중 오류 발생: {e}")
 

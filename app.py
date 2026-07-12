@@ -1,11 +1,12 @@
 import streamlit as st
 import os
 import pandas as pd
-from datetime import datetime
 
 from batch.batch_scheduler_manager import get_scheduler_manager
 from utils.chatbot import show_chatbot
 from utils.cart import init_cart
+from utils.paths import categorized_path
+from utils.ui_css import inject_app_css
 
 st.set_page_config(page_title="편의점 행사 대시보드", page_icon="🏪", layout="wide")
 scheduler = get_scheduler_manager()
@@ -27,16 +28,13 @@ if 'recent_keywords' not in st.session_state:
 # 장바구니 세션 초기화
 init_cart()
 
-
-# CSS 로드 (모든 페이지 공통)
-if os.path.exists("style.css"):
-    with open("style.css", encoding="utf-8") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# CSS 로드 (모든 페이지 공통 — 페이지에서 재주입하지 않음)
+inject_app_css()
 
 # 데이터 로드 (사이드바 통계용)
 @st.cache_data(ttl=3600)
 def get_summary_stats():
-    file_path = os.path.join('data', 'categorized_data.csv')
+    file_path = categorized_path()
     if not os.path.exists(file_path):
         return None
     df = pd.read_csv(file_path)

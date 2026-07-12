@@ -1,23 +1,11 @@
 import streamlit as st
 import pandas as pd
-from pathlib import Path
-import os
 import itertools
 import random
 from utils.cart import init_cart, add_to_cart, is_in_cart, remove_from_cart, render_floating_cart
-
-# 브랜드별 고유 컬러 반환 함수
-def get_brand_color(brand):
-    brand_colors = {
-        "CU": "#652D90",
-        "GS25": "#0054A6",
-        "7-Eleven": "#008061",
-        "7Eleven": "#008061",
-        "세븐일레븐": "#008061",
-        "emart24": "#FFB81C",
-        "이마트24": "#FFB81C"
-    }
-    return brand_colors.get(brand, "#8b949e")
+from utils.brand import get_brand_color
+from utils.data_loader import load_categorized_df
+from utils.html_safe import esc, esc_attr
 
 # ==========================================
 # 1. 상수 정의 (Constants)
@@ -39,48 +27,24 @@ REDUNDANT_GROUPS = [
 # ==========================================
 # 2. 데이터 로드 및 전처리
 # ==========================================
-@st.cache_data
 def load_data():
-    file_path = Path("data/categorized_data.csv")
-    if not file_path.exists():
+    df = load_categorized_df(
+        with_unit_price=True,
+        with_discount_num=True,
+        with_pay_counts=True,
+        drop_duplicates=True,
+    )
+    if df.empty:
         st.error("데이터 파일을 찾을 수 없습니다.")
-        return pd.DataFrame()
-    
-    try:
-        df = pd.read_csv(file_path)
-    except Exception as e:
-        st.error(f"데이터 파일 읽기 실패: {e}")
-        return pd.DataFrame()
+        return df
 
     required_cols = ["brand", "name", "price", "event", "category", "img_url"]
     if not all(col in df.columns for col in required_cols):
         st.error("데이터 파일에 필수 컬럼이 부족합니다.")
         return pd.DataFrame()
 
-    if df['price'].dtype == object:
-        df['price'] = pd.to_numeric(df['price'].astype(str).str.replace(r'[^\d]', '', regex=True), errors='coerce').fillna(0)
-    
-    df['price'] = df['price'].astype(int)
-    df['unit_price'] = df['price'].astype(float)
-    df['discount_rate'] = 0.0
-    
-    # 실제 결제 개수와 총 개수 정의
-    df['pay_count'] = 1
-    df['total_count'] = 1
-
-    masks = {
-        '1+1': (df['price'] / 2, 50.0, 1, 2),
-        '2+1': ((df['price'] * 2) / 3, 33.3, 2, 3),
-        '3+1': ((df['price'] * 3) / 4, 25.0, 3, 4)
-    }
-    for event_type, (unit_price_calc, discount, pay_cnt, total_cnt) in masks.items():
-        mask = df['event'].astype(str).str.contains(event_type.replace('+', r'\+'), na=False)
-        df.loc[mask, 'unit_price'] = unit_price_calc
-        df.loc[mask, 'discount_rate'] = discount
-        df.loc[mask, 'pay_count'] = pay_cnt
-        df.loc[mask, 'total_count'] = total_cnt
-
-    df['unit_price'] = df['unit_price'].astype(int)
+    # 조합 엔진은 숫자 할인율로 정렬한다 (표시용 문자열과 분리)
+    df["discount_rate"] = df["discount_num"]
     return df
 
 # ==========================================
@@ -265,10 +229,6 @@ def find_best_combinations(df, selected_categories, budget, selected_events, sea
 # ==========================================
 # 4. 화면 UI 출력부 (Streamlit 페이지 로드 시 즉시 실행)
 # ==========================================
-if os.path.exists("static/css/style.css"):
-    with open("static/css/style.css", encoding="utf-8") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
 df = load_data()
 
 init_cart()
@@ -362,18 +322,21 @@ if top_combinations:
             for i, item in enumerate(items):
                 with item_cols[i]:
                     brand_color = get_brand_color(item['brand'])
-                    img_url = item['img_url'] if pd.notna(item['img_url']) else "https://via.placeholder.com/150"
-                    
+                    img_url = esc_attr(item['img_url']) if pd.notna(item['img_url']) else "https://via.placeholder.com/150"
+                    name = esc(item['name'])
+                    brand = esc(item['brand'])
+                    event = esc(item['event'])
+
                     # 상품 카드 스타일링
                     st.markdown(f"""
                         <div style="background-color: #1c1c1e; border-radius: 12px; padding: 12px; border: 1px solid #333; text-align: center; height: 100%;">
                             <img src="{img_url}" style="width: 100%; height: 80px; object-fit: contain; margin-bottom: 10px;">
-                            <div style="font-size: 0.8rem; font-weight: bold; color: white; height: 35px; overflow: hidden; line-height: 1.2; margin-bottom: 5px;">{item['name']}</div>
+                            <div style="font-size: 0.8rem; font-weight: bold; color: white; height: 35px; overflow: hidden; line-height: 1.2; margin-bottom: 5px;">{name}</div>
                             <div style="margin-bottom: 8px;">
-                                <span style='color:{brand_color}; background:{brand_color}15; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem;'>{item['brand']}</span>
+                                <span style='color:{brand_color}; background:{brand_color}15; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem;'>{brand}</span>
                             </div>
                             <div style="font-size: 0.9rem; color: #58a6ff; font-weight: bold;">{item['price']:,}원</div>
-                            <div style="font-size: 0.75rem; color: #ff6b6b; font-weight: bold; margin-top: 3px;">{item['event']}</div>
+                            <div style="font-size: 0.75rem; color: #ff6b6b; font-weight: bold; margin-top: 3px;">{event}</div>
                         </div>
                     """, unsafe_allow_html=True)
                     

@@ -126,7 +126,8 @@ def scrape_official_events():
     if not df.empty:
         df = df.drop_duplicates(subset=['brand', 'title'], keep='first')
         
-        save_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
+        from utils.paths import get_data_dir
+        save_dir = get_data_dir()
         os.makedirs(save_dir, exist_ok=True)
         save_path = os.path.join(save_dir, 'official_event_news.csv')
         df.to_csv(save_path, index=False, encoding='utf-8-sig')

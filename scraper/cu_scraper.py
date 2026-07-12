@@ -55,26 +55,13 @@ class CUCrawler:
         self._save_to_csv(start_ts)
 
     def _save_to_csv(self, start_ts):
-        if not self.product_list:
-            print("❌ 수집된 데이터가 없습니다.")
-            return
-
-        df = pd.DataFrame(self.product_list)
-        raw_count = len(df)
-        df = df.drop_duplicates(subset=['name', 'price', 'event'])
-        
-        date_str = datetime.now().strftime("%y%m%d")
-        filename = f"CU_{date_str}.csv"
-        os.makedirs("data", exist_ok=True)
-        file_path = os.path.join("data", filename)
-        df.to_csv(file_path, index=False, encoding="utf-8-sig")
-
-        duration = datetime.now() - start_ts
-        print(f"\n최종 결과 요약:")
-        print(f" - 전체 수집 개수: {raw_count}")
-        print(f" - 중복 제거 후  : {len(df)}")
-        print(f" - 저장 파일명   : {file_path}")
-        print(f" - 소요 시간     : {duration.seconds // 60}분 {duration.seconds % 60}초")
+        from scraper.base import save_products
+        save_products(
+            pd.DataFrame(self.product_list),
+            self.brand,
+            start_ts=start_ts,
+            dedupe_subset=['name', 'price', 'event'],
+        )
 
 def scrape():
     crawler = CUCrawler()
