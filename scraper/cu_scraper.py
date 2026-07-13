@@ -44,6 +44,7 @@ class CUCrawler:
 
     def run(self, max_pages=150):
         start_ts = datetime.now()
+        t0 = time.perf_counter()
         print(f"🚀 [{self.brand}] 데이터 수집을 시작합니다...")
         
         for page in range(1, max_pages + 1):
@@ -52,14 +53,15 @@ class CUCrawler:
             if page % 10 == 0: print(f" 📦 {page}페이지 수집 중... (누적: {len(self.product_list)}건)")
             time.sleep(0.5)
 
-        self._save_to_csv(start_ts)
+        self._save_to_csv(start_ts, t0)
 
-    def _save_to_csv(self, start_ts):
+    def _save_to_csv(self, start_ts, t0):
         from scraper.base import save_products
         save_products(
             pd.DataFrame(self.product_list),
             self.brand,
             start_ts=start_ts,
+            t0=t0,
             dedupe_subset=['name', 'price', 'event'],
         )
 

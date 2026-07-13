@@ -19,6 +19,7 @@ class Emart24Scraper:
 
     def run(self):
         start_ts = datetime.now()
+        t0 = time.perf_counter()
         print(f"🚀 [{self.brand}] 데이터 수집을 시작합니다...")
         
         data_list = []
@@ -52,11 +53,11 @@ class Emart24Scraper:
                 page += 1
                 time.sleep(random.uniform(0.1, 0.3))
             
-        self._save_to_csv(data_list, start_ts)
+        self._save_to_csv(data_list, start_ts, t0)
 
-    def _save_to_csv(self, data_list, start_ts):
+    def _save_to_csv(self, data_list, start_ts, t0):
         from scraper.base import save_products
-        save_products(pd.DataFrame(data_list), self.brand, start_ts=start_ts)
+        save_products(pd.DataFrame(data_list), self.brand, start_ts=start_ts, t0=t0)
 
 def scrape():
     scraper = Emart24Scraper()

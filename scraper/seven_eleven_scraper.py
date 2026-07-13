@@ -4,12 +4,14 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
+import time
 
 from scraper.base import save_products
 
 
 def crawl_7eleven():
     start_ts = datetime.now()
+    t0 = time.perf_counter()
     brand_name = "7-Eleven"
     print(f"🚀 [{brand_name}] 데이터 수집을 시작합니다...")
 
@@ -56,7 +58,7 @@ def crawl_7eleven():
             print(f" ❌ {event_label} 수집 중 오류: {e}")
 
     if all_products:
-        save_products(pd.DataFrame(all_products), "7Eleven", start_ts=start_ts)
+        save_products(pd.DataFrame(all_products), "7Eleven", start_ts=start_ts, t0=t0)
     else:
         print("❌ 수집된 데이터가 없습니다.")
 

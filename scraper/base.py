@@ -1,9 +1,9 @@
 """Shared scraper CSV save helpers."""
 from __future__ import annotations
 
+import datetime as datetime_module
 import os
 import time
-from datetime import datetime
 
 import pandas as pd
 
@@ -14,7 +14,8 @@ def save_products(
     df: pd.DataFrame,
     brand: str,
     *,
-    start_ts: datetime | None = None,
+    start_ts: datetime_module.datetime | None = None,
+    t0: float | None = None,
     dedupe_subset: list | None = None,
     file_stamp: str | None = None,
 ) -> str | None:
@@ -26,13 +27,17 @@ def save_products(
       2) BATCH_FILE_STAMP env (set by batch runner for target YYMM)
       3) start_ts.strftime("%y%m%d")
       4) wall-clock now
+
+    Elapsed time:
+      - prefer t0=time.perf_counter() captured at crawl start (batch-safe)
+      - else wall-clock delta from start_ts using real datetime (not monkeypatched)
     """
     if df is None or df.empty:
         print("❌ 수집된 데이터가 없습니다.")
         return None
 
-    t0 = time.monotonic()
-    start_ts = start_ts or datetime.now()
+    wall_now = datetime_module.datetime.now()
+    start_ts = start_ts or wall_now
     work = df.copy()
     raw_count = len(work)
     subset = dedupe_subset or ["name", "event"]
@@ -50,7 +55,15 @@ def save_products(
     file_path = os.path.join(data_dir, f"{brand}_{stamp}.csv")
     work.to_csv(file_path, index=False, encoding="utf-8-sig")
 
-    elapsed_sec = int(time.monotonic() - t0)
+    if t0 is not None:
+        elapsed_sec = max(0, int(time.perf_counter() - t0))
+    else:
+        # Real wall clock — survives scraper datetime monkeypatch on `datetime` name
+        elapsed_sec = max(0, int((wall_now - start_ts).total_seconds()))
+        # Patched start_ts far from wall clock → delta meaningless
+        if elapsed_sec > 12 * 3600:
+            elapsed_sec = 0
+
     print("\n최종 결과 요약:")
     print(f" - 전체 수집 개수: {raw_count}")
     print(f" - 중복 제거 후  : {len(work)}")

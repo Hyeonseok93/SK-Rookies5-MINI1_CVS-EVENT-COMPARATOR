@@ -8,6 +8,7 @@ from datetime import datetime
 
 def scrape_gs25_event_goods():
     start_ts = datetime.now()
+    t0 = time.perf_counter()
     brand_name = "GS25"
     print(f"🚀 [{brand_name}] 데이터 수집을 시작합니다...")
     
@@ -47,7 +48,7 @@ def scrape_gs25_event_goods():
         
     if gs25_data_list:
         from scraper.base import save_products
-        save_products(pd.DataFrame(gs25_data_list), 'GS25', start_ts=start_ts)
+        save_products(pd.DataFrame(gs25_data_list), 'GS25', start_ts=start_ts, t0=t0)
     else:
         print("❌ 수집된 데이터가 없습니다.")
 
