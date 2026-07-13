@@ -1,27 +1,169 @@
 # 🏪 CVS Event Comparator (편의점 행사 상품 통합 대시보드)
 
+편의점 4사(CU, GS25, 7-Eleven, emart24)는 웹 구조와 행사 페이지 로딩 방식이 제각각입니다. 이 프로젝트는 **브랜드마다 맞는 크롤러**로 행사 상품을 수집하고, 한 스키마로 **정제·카테고리화**한 뒤 Streamlit 대시보드에서 **비교·추천**까지 이어 줍니다.
+
+수집 → 정제 → 분류 파이프라인 위에 **브랜드 비교 시각화, 예산 맞춤 조합, 테마별 가이드(다이어트·야식), 편의점 지도, Groq 기반 AI 챗봇** 등을 붙여 둔 통합 분석 서비스입니다.
+
+## 🛠 기술 스택
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/python.png">
+    <img src="assets/readme/badges/dark/python.png" alt="Python" height="28" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/streamlit.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/streamlit.png">
+    <img src="assets/readme/badges/dark/streamlit.png" alt="Streamlit" height="28" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/pandas.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/pandas.png">
+    <img src="assets/readme/badges/dark/pandas.png" alt="Pandas" height="28" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/plotly.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/plotly.png">
+    <img src="assets/readme/badges/dark/plotly.png" alt="Plotly" height="28" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/selenium.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/selenium.png">
+    <img src="assets/readme/badges/dark/selenium.png" alt="Selenium" height="28" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/beautifulsoup.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/beautifulsoup.png">
+    <img src="assets/readme/badges/dark/beautifulsoup.png" alt="BeautifulSoup" height="28" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/groq.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/groq.png">
+    <img src="assets/readme/badges/dark/groq.png" alt="Groq" height="28" />
+  </picture>
+</p>
+
 <div align="center">
-  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white" />
-  <img src="https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=Selenium&logoColor=white" />
-  <img src="https://img.shields.io/badge/BeautifulSoup-Orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Llama_3.3_(Groq)-F34F29?style=for-the-badge&logo=groq&logoColor=white" />
-  <img src="https://img.shields.io/badge/Folium-77B829?style=for-the-badge&logo=leaflet&logoColor=white" />
+
+<table align="center">
+  <thead>
+    <tr>
+      <th align="left">구분</th>
+      <th align="left">기술</th>
+      <th align="left">역할</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="left"><strong>Dashboard UI</strong></td>
+      <td align="left">Streamlit, Custom CSS</td>
+      <td align="left">멀티 페이지 대시보드, 다크/글래스모피즘 테마</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Visualization</strong></td>
+      <td align="left">Plotly, Folium</td>
+      <td align="left">브랜드 비교 차트, 편의점 지도·클러스터</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Data Pipeline</strong></td>
+      <td align="left">BeautifulSoup, Requests, Pandas</td>
+      <td align="left">4사 상품 크롤링 → 정제 → 카테고리 분류</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Event News</strong></td>
+      <td align="left">Selenium</td>
+      <td align="left">공식 행사 뉴스 동적 페이지 수집</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Batch</strong></td>
+      <td align="left">APScheduler, Loguru</td>
+      <td align="left">매일 06:00(KST) 자동 수집·갱신</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>AI Chatbot</strong></td>
+      <td align="left">Groq (Llama 3.3) + 로컬 RAG</td>
+      <td align="left">키워드로 상품 CSV를 뽑아 컨텍스트로 주입</td>
+    </tr>
+  </tbody>
+</table>
+
 </div>
 
-<br />
+## 🖥️ 서비스 미리보기
 
-**CVS Event Comparator**는 국내 주요 편의점 4사(CU, GS25, 7-Eleven, emart24)의 행사 상품 데이터를 수집, 정제, 카테고리화하여 스마트한 소비를 돕는 **실시간 행사 통합 분석 및 추천 대시보드**입니다.
+<div align="center">
+  <img src="assets/readme/main.png" alt="CVS Event Comparator 홈 화면" width="900" />
+  <p><em>메인보드 — 핫딜 배너 · 시간대별 추천 · 뉴스 피드</em></p>
+</div>
 
-단순 정보 조회를 넘어 **AI 기반 추천 챗봇, 예산 맞춤형 조합 생성, 다이어트 및 야식 등 테마별 추천 가이드, 편의점 지도 서비스 및 게이미피케이션 요소**까지 결합한 종합 편의점 플랫폼 서비스입니다.
+<div align="center">
+
+<table align="center">
+  <thead>
+    <tr>
+      <th align="left">메뉴</th>
+      <th align="left">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="left">🏠 메인보드</td>
+      <td align="left">핫딜 배너, 시간대별 추천, 뉴스 피드</td>
+    </tr>
+    <tr>
+      <td align="left">🔍 전체 요약</td>
+      <td align="left">브랜드·행사·카테고리 필터와 상품 검색</td>
+    </tr>
+    <tr>
+      <td align="left">📊 브랜드 비교</td>
+      <td align="left">4사 행사 전략·가격·카테고리 비교 시각화</td>
+    </tr>
+    <tr>
+      <td align="left">💎 가성비 TOP 50</td>
+      <td align="left">실질 구매가·할인 효과 기준 가성비 랭킹</td>
+    </tr>
+    <tr>
+      <td align="left">🍱 내 예산 맞춤 꿀조합 생성기</td>
+      <td align="left">예산에 맞춘 1+1 / 2+1 조합 추천</td>
+    </tr>
+    <tr>
+      <td align="left">🏋️ 다이어트 &amp; 식단 가이드</td>
+      <td align="left">칼로리·식사 테마별 추천 상품</td>
+    </tr>
+    <tr>
+      <td align="left">🌙 야식 &amp; 안주 가이드</td>
+      <td align="left">야식·안주 테마 추천 상품</td>
+    </tr>
+    <tr>
+      <td align="left">🎁 럭키박스</td>
+      <td align="left">조건에 맞는 랜덤 상품 뽑기</td>
+    </tr>
+    <tr>
+      <td align="left">📍 편의점 지도</td>
+      <td align="left">주변 편의점 위치 지도 (Folium)</td>
+    </tr>
+    <tr>
+      <td align="left">🎰 잭팟 게임</td>
+      <td align="left">슬롯 머신 스타일 이벤트 게임</td>
+    </tr>
+    <tr>
+      <td align="left">🎉 행사 및 이벤트 소식</td>
+      <td align="left">편의점 공식 행사·이벤트 뉴스</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
 
 ---
 
 ## 🌟 프로젝트 핵심 차별화 포인트 (Portfolio Highlights)
 
 1. **자동화된 데이터 파이프라인 (Data Pipeline & Batch Scheduler)**
-   - Selenium & BeautifulSoup 기반의 개별 크롤러 탑재.
-   - `APScheduler`를 활용하여 매일 주기적으로 편의점 4사의 행사 상품 목록을 자동으로 갱신하고 클렌징하는 배치 스크립트 구축.
+   - 브랜드별 웹 구조에 맞춘 Requests + BeautifulSoup 크롤러로 4사 행사 상품 수집.
+   - Selenium으로 공식 행사 뉴스(동적 페이지) 수집.
+   - `APScheduler`로 매일 06:00(KST) 배치 갱신·클렌징.
 2. **AI RAG 기반 편의점 추천 챗봇 (Groq Llama-3 Chatbot)**
    - 사용자의 입력 키워드를 기반으로 상품 데이터베이스(CSV)를 필터링하여 컨텍스트(Context)로 전달하는 실시간 룰 기반 챗봇 서비스 설계.
    - 자연스러운 한국어로 상품 정보 및 페어링 팁을 알려주는 대화형 에이전트 구현.
@@ -91,11 +233,15 @@ conv-dashboard/
 ┃   ┗━━ 📄 devcontainer.json        # 클라우드/컨테이너 개발 환경 명세
 ┣━━ 📂 .streamlit/                  # Streamlit 설정 폴더
 ┃   ┗━━ 📄 config.toml              # 테마(Dark), 레이아웃 및 포트 설정
-┣━━ 📂 assets/                      # 브랜드 로고 및 분석 정적 이미지
-┃   ┣━━ 🖼️ logo_cu.png              # CU 브랜드 로고
-┃   ┣━━ 🖼️ logo_gs25.png            # GS25 브랜드 로고
-┃   ┣━━ 🖼️ logo_7eleven.png         # 세븐일레븐 브랜드 로고
-┃   ┗━━ 🖼️ logo_emart24.png         # 이마트24 브랜드 로고
+┣━━ 📂 assets/                      # 브랜드 로고 · README 에셋
+┃   ┣━━ 📂 readme/                  # README용 스크린샷 · 뱃지
+┃   ┃   ┣━━ 📂 badges/dark/         # 기술 스택 뱃지 (다크 테마)
+┃   ┃   ┣━━ 📂 badges/light/        # 기술 스택 뱃지 (라이트 테마)
+┃   ┃   ┗━━ 🖼️ main.png             # 서비스 미리보기
+┃   ┣━━ 🖼️ logo_cu.png
+┃   ┣━━ 🖼️ logo_gs25.png
+┃   ┣━━ 🖼️ logo_7eleven.png
+┃   ┗━━ 🖼️ logo_emart24.png
 ┣━━ 📂 batch/                       # 데이터 수집 자동화 및 스케줄러 (UI와 분리)
 ┃   ┣━━ 📂 script/
 ┃   ┃   ┗━━ 📄 crawl_batch_script.py # 통합 크롤링 및 정제 실행 자동화 스크립트
@@ -124,10 +270,11 @@ conv-dashboard/
 ┃   ┣━━ 📄 09_jackpot_game.py       # 재미 요소를 결합한 상품 매칭 슬롯머신
 ┃   ┗━━ 📄 10_event_news.py         # 편의점 업계 최신 마케팅 및 이벤트 동향 소식
 ┣━━ 📂 scraper/                     # 편의점 4사 전용 크롤링 라이브러리
-┃   ┣━━ 📄 cu_scraper.py            # CU 이벤트 크롤러 (Ajax Requests)
-┃   ┣━━ 📄 gs25_scraper.py          # GS25 이벤트 크롤러 (Selenium)
-┃   ┣━━ 📄 seven_eleven_scraper.py  # 7-Eleven 이벤트 크롤러 (BeautifulSoup)
-┃   ┣━━ 📄 emart24_scraper.py       # emart24 이벤트 크롤러 (BeautifulSoup)
+┃   ┣━━ 📄 cu_scraper.py            # CU (Requests + BeautifulSoup)
+┃   ┣━━ 📄 gs25_scraper.py          # GS25 (Requests + BeautifulSoup)
+┃   ┣━━ 📄 seven_eleven_scraper.py  # 7-Eleven (Requests + BeautifulSoup)
+┃   ┣━━ 📄 emart24_scraper.py       # emart24 (Requests + BeautifulSoup)
+┃   ┗━━ 📄 event_news_scraper.py    # 공식 행사 뉴스 (Selenium)
 ┃   ┣━━ 📄 event_news_scraper.py    # 브랜드별 보도자료/뉴스 연동용 스크래퍼
 ┃   ┗━━ 📄 __init__.py
 ┣━━ 📂 test/                        # 스케줄러 기능 검증 및 개별 스크립트 테스트 폴더
@@ -146,30 +293,6 @@ conv-dashboard/
 ┣━━ 📄 requirements.txt             # 개발 패키지 명세서
 ┗━━ 📄 .gitignore                   # Git 제외 파일 관리 가이드
 ```
-
----
-
-## 🛠️ 주요 기술 스택 (Tech Stack)
-
-### **Frontend & Dashboard UI**
-
-- **Streamlit**: 다중 페이지 구조(`st.navigation`) 및 상태 관리(`st.session_state`)를 활용한 고기능 SPA 구현.
-- **Custom CSS (style.css)**: 다크 모드에 최적화된 글래스모피즘 테마 및 고유 컴포넌트 커스터마이징.
-- **Plotly**: 반응형 데이터 통계 차트 및 브랜드별 규모 시각화.
-- **Folium & Streamlit-Folium**: 카카오/VWorld API 연동 없이 마커 클러스터링을 적용한 지도 서비스 구현.
-
-### **Backend & Data Pipeline**
-
-- **Selenium**: 동적 로딩(Ajax) 기반의 GS25 등 사이트 스크래핑 제어.
-- **BeautifulSoup4 & Requests**: 정적 페이지의 고속 데이터 스크래핑.
-- **Pandas**: 대용량 상품 데이터의 전처리, 중복 제어 및 다차원 통계 연산.
-- **APScheduler**: 백그라운드 데몬 형태의 자동 정기 스크래핑 태스크 스케줄링.
-- **Loguru**: 직관적인 로그 포맷팅 및 디버깅 시스템 구축.
-
-### **Artificial Intelligence**
-
-- **Groq Cloud API**: Llama-3.3-70B 모델을 탑재하여 초고속 LLM 응답 구현.
-- **Local RAG (Retrieval-Augmented Generation)**: 사용자의 질문 맥락에 적합한 데이터프레임 내의 상품 목록(20여 개)을 동적으로 추출하여 시스템 프롬프트에 실시간 주입.
 
 ---
 
