@@ -4,8 +4,8 @@ import pandas as pd
 from utils.brand import get_brand_color
 from utils.cart import init_cart, render_cart_button, render_floating_cart
 from utils.data_loader import load_categorized_df
-from utils.filters import track_recent_keyword
-from utils.html_safe import esc
+from utils.filters import SEARCH_MAX_CHARS, name_contains, track_recent_keyword
+from utils.html_safe import esc, safe_img_url
 from utils.product_grid import paginate, render_pagination
 
 df = load_categorized_df(with_discount_num=True)
@@ -21,7 +21,13 @@ else:
     with st.expander("🔍 상세 필터 및 검색", expanded=True):
         r1_c1, r1_c2 = st.columns([3, 1])
         with r1_c1:
-            search_query = st.text_input("📝 검색", "", placeholder="상품명 입력", key="best_search")
+            search_query = st.text_input(
+                "📝 검색",
+                "",
+                placeholder="상품명 입력",
+                key="best_search",
+                max_chars=SEARCH_MAX_CHARS,
+            )
             track_recent_keyword(search_query)
         with r1_c2:
             sort_option = st.selectbox(
@@ -45,7 +51,7 @@ else:
         (df['brand'].isin(selected_brands))
         & (df['event'].isin(selected_events))
         & (df['category'].isin(selected_cats))
-        & (df['name'].str.contains(search_query, case=False, na=False))
+        & name_contains(df['name'], search_query)
     ].copy()
 
     if sort_option == "가격 낮은 순":
@@ -71,7 +77,7 @@ else:
             with st.container():
                 c1, c2, c3 = st.columns([1.5, 4, 2])
                 with c1:
-                    img_url = row['img_url'] if pd.notna(row['img_url']) else ""
+                    img_url = safe_img_url(row['img_url']) if pd.notna(row['img_url']) else ""
                     if img_url:
                         st.image(img_url, width=120)
                 with c2:

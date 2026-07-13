@@ -6,6 +6,16 @@ from dataclasses import dataclass
 import pandas as pd
 import streamlit as st
 
+# 1-6: 검색 입력 길이 상한
+SEARCH_MAX_CHARS = 80
+
+
+def name_contains(series: pd.Series, query: str) -> pd.Series:
+    """Literal substring match — never treat user input as regex (1-2)."""
+    if not query:
+        return pd.Series(True, index=series.index)
+    return series.astype(str).str.contains(query, case=False, na=False, regex=False)
+
 
 @dataclass
 class FilterState:
@@ -20,12 +30,13 @@ class FilterState:
 def track_recent_keyword(search_query: str, limit: int = 5) -> None:
     if not search_query:
         return
+    q = search_query[:SEARCH_MAX_CHARS]
     if "recent_keywords" not in st.session_state:
         st.session_state["recent_keywords"] = []
     kws = st.session_state["recent_keywords"]
-    if search_query in kws:
-        kws.remove(search_query)
-    kws.insert(0, search_query)
+    if q in kws:
+        kws.remove(q)
+    kws.insert(0, q)
     st.session_state["recent_keywords"] = kws[:limit]
 
 
@@ -41,9 +52,9 @@ def apply_sort(df: pd.DataFrame, sort_option: str, search_query: str = "") -> pd
         and st.session_state["recent_keywords"]
         and "name" in out.columns
     ):
-        latest = st.session_state["recent_keywords"][0]
+        latest = st.session_state["recent_keywords"][0][:SEARCH_MAX_CHARS]
         ranked = out.copy()
-        ranked["is_recommended"] = ranked["name"].str.contains(latest, case=False, na=False).astype(int)
+        ranked["is_recommended"] = name_contains(ranked["name"], latest).astype(int)
         ranked = ranked.sort_values(by="is_recommended", ascending=False)
         return ranked.drop(columns=["is_recommended"])
     return out
@@ -65,7 +76,11 @@ def render_product_filters(
         r1_c1, r1_c2 = st.columns([3, 1])
         with r1_c1:
             search_query = st.text_input(
-                "📝 검색", "", placeholder="상품명 입력", key=f"{key_prefix}_search"
+                "📝 검색",
+                "",
+                placeholder="상품명 입력",
+                key=f"{key_prefix}_search",
+                max_chars=SEARCH_MAX_CHARS,
             )
             track_recent_keyword(search_query)
         with r1_c2:
@@ -93,7 +108,7 @@ def render_product_filters(
     filtered = df[
         (df["brand"].isin(selected_brands))
         & (df["event"].isin(selected_events))
-        & (df["name"].str.contains(search_query, case=False, na=False))
+        & name_contains(df["name"], search_query)
     ]
     if selected_cats and "category" in filtered.columns:
         filtered = filtered[filtered["category"].isin(selected_cats)]

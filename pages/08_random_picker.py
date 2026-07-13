@@ -5,7 +5,7 @@ import time
 from utils.brand import get_brand_color
 from utils.cart import init_cart, add_to_cart, is_in_cart, remove_from_cart, render_floating_cart
 from utils.data_loader import load_categorized_df
-from utils.html_safe import esc, esc_attr
+from utils.html_safe import esc, safe_img_url
 
 df = load_categorized_df(with_unit_price=True)
 
@@ -65,7 +65,10 @@ if not df.empty:
             st.success(f"🎉 오늘의 추천 상품은 **{picked_item['name']}** 입니다!")
 
             img_url = (
-                esc_attr(picked_item["img_url"])
+                safe_img_url(
+                    picked_item["img_url"],
+                    fallback="https://via.placeholder.com/250?text=No+Image",
+                )
                 if pd.notna(picked_item.get("img_url"))
                 else "https://via.placeholder.com/250?text=No+Image"
             )

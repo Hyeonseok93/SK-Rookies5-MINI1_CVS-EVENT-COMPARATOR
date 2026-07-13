@@ -2,13 +2,17 @@ import streamlit as st
 import math
 from datetime import datetime, timedelta
 
-from utils.html_safe import esc, esc_attr
+from utils.html_safe import esc, safe_url
 from utils.news_scraper import fetch_realtime_cvs_news
 
 st.markdown("## 🎉 편의점 행사 및 이벤트 소식")
 st.caption("편의점 4사의 최신 공식 이벤트를 한눈에 확인하세요!")
 
 df = fetch_realtime_cvs_news()
+
+if df.empty or "brand" not in df.columns:
+    st.warning("수집된 행사 소식이 없습니다. 배치/뉴스 스크래퍼 실행 후 다시 확인해주세요.")
+    st.stop()
 
 brands = ["전체", "GS25", "CU", "세븐일레븐", "이마트24"]
 selected_brand = st.selectbox("🏢 브랜드 필터", brands)
@@ -62,7 +66,7 @@ else:
         date_str = row['pub_date'].strftime("%Y-%m-%d")
         brand = esc(row['brand'])
         title = esc(row['title'])
-        link = esc_attr(row['link'])
+        link = safe_url(row['link'])
 
         st.markdown(f"""
         <div style="padding: 15px; border-bottom: 1px solid #444; display: flex; flex-direction: column;">

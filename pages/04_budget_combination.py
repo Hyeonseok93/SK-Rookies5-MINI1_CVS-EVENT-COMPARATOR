@@ -4,13 +4,13 @@ import itertools
 import random
 from utils.cart import init_cart, add_to_cart, is_in_cart, remove_from_cart, render_floating_cart
 from utils.brand import get_brand_color
+from utils.html_safe import esc, safe_img_url
+from utils.filters import SEARCH_MAX_CHARS, name_contains
 from utils.data_loader import load_categorized_df
-from utils.html_safe import esc, esc_attr
 
 # ==========================================
 # 1. 상수 정의 (Constants)
 # ==========================================
-MEAL_KEYWORDS = ['도시락', '김밥', '샌드위치', '햄버거', '핫도그', '주먹밥', '샐러드', '면', '밥', '삼각김밥', '국', '찌개', '탕', '즉석밥', '덮밥', '볶음밥', '죽', '컵밥', '밥버거']
 SOUP_KEYWORDS = ['국', '찌개', '탕', '전골', '부대찌개', '순두부', '육개장', '곰탕', '설렁탕']
 MEAL_EXCLUDE_KEYWORDS = ['도시락김', '김밥김', '삼각김밥용', '볶음밥용', '찌개양념', '국물용', '세트', '재료', '용기', '즉석', '조리']
 RICE_STAPLE_KEYWORDS = ['즉석밥', '백미밥', '현미밥', '잡곡밥', '햇반', '오뚜기밥', '밥', '볶음밥', '덮밥', '컵밥', '주먹밥', '김밥', '삼각김밥', '김치볶음밥', '새우볶음밥', '소불고기덮밥']
@@ -58,43 +58,15 @@ def has_redundancy(items):
             return True
     return False
 
-def get_candidate_pools(df, categories, budget):
-    """선택된 카테고리별로 후보 상품 리스트를 생성합니다."""
-    candidate_items = []
-    target_price = budget / len(categories)
-    
-    for cat in categories:
-        # 번들 결제 금액(price * pay_count) 기준으로 예산 필터링
-        cat_df = df[(df['category'] == cat) & (df['price'] * df['pay_count'] <= budget * 0.7)].copy()
-        if cat_df.empty:
-            continue
-            
-        # 번들 결제 금액과 목표 금액의 차이 계산
-        cat_df['price_diff'] = (cat_df['price'] * cat_df['pay_count'] - target_price).abs()
-
-        if cat == '식사류':
-            mask_include = cat_df['name'].str.contains('|'.join(MEAL_KEYWORDS), case=False, na=False)
-            mask_exclude = cat_df['name'].str.contains('|'.join(MEAL_EXCLUDE_KEYWORDS), case=False, na=False)
-            meal_items_mask = mask_include & ~mask_exclude
-            
-            top_items = pd.concat([
-                cat_df[meal_items_mask].sort_values(by=['discount_rate', 'price_diff'], ascending=[False, True]),
-                cat_df[~meal_items_mask].sort_values(by=['discount_rate', 'price_diff'], ascending=[False, True])
-            ]).drop_duplicates(subset=['name']).head(30)
-        else:
-            top_items = cat_df.sort_values(by=['discount_rate', 'price_diff'], ascending=[False, True]).head(30)
-        
-        if not top_items.empty:
-            pool_list = top_items.to_dict('records')
-            candidate_items.append(random.sample(pool_list, min(len(pool_list), 10)))
-            
-    return candidate_items
-
 def find_best_combinations(df, selected_categories, budget, selected_events, search_keyword=""):
     """
     최적의 꿀조합을 찾습니다. 
     행사 유형(selected_events) 필터링을 추가했습니다.
     """
+    MAX_POOL = 8
+    MAX_COMBOS_SCAN = 4000
+    MAX_RESULTS = 30
+
     # 0. 행사 유형 필터링 적용
     if selected_events:
         # '1+1' 등의 텍스트가 포함된 행만 필터링 (regex 사용 방지 위해 단순 string check)
@@ -127,7 +99,7 @@ def find_best_combinations(df, selected_categories, budget, selected_events, sea
         
         if search_keyword and not keyword_applied:
             # 현재 카테고리에서 검색어가 포함된 상품이 있는지 확인
-            matched_df = cat_df[cat_df['name'].str.contains(search_keyword, case=False, na=False)]
+            matched_df = cat_df[name_contains(cat_df['name'], search_keyword)]
             if not matched_df.empty:
                 # 검색어가 포함된 상품을 우선적으로 풀(Pool)에 담음
                 top_items = matched_df.sort_values(by=['discount_rate'], ascending=False).head(20)
@@ -141,16 +113,18 @@ def find_best_combinations(df, selected_categories, budget, selected_events, sea
         
         if not top_items.empty:
             pool_list = top_items.to_dict('records')
-            # 다양한 추천을 위해 랜덤하게 샘플링
-            candidate_items.append(random.sample(pool_list, min(len(pool_list), 10)))
+            # 다양한 추천을 위해 랜덤하게 샘플링 (상한으로 조합 폭발 완화)
+            candidate_items.append(random.sample(pool_list, min(len(pool_list), MAX_POOL)))
 
     # 필수 카테고리 개수만큼 풀이 확보되지 않으면 빈 리스트 반환
     if len(candidate_items) < len(selected_categories):
         return []
 
-    # 모든 후보군으로 가능한 조합 생성 및 셔플
+    # 전개 전 셔플을 위해 리스트화하되 스캔 상한 적용
     all_combinations = list(itertools.product(*candidate_items))
     random.shuffle(all_combinations)
+    if len(all_combinations) > MAX_COMBOS_SCAN:
+        all_combinations = all_combinations[:MAX_COMBOS_SCAN]
     
     valid_combinations = []
     seen_names = set()
@@ -220,7 +194,7 @@ def find_best_combinations(df, selected_categories, budget, selected_events, sea
                     'saved_money': saved_money
                 })
                 seen_names.add(combo_names)
-                if len(valid_combinations) >= 30: break
+                if len(valid_combinations) >= MAX_RESULTS: break
 
     # 전체 가격이 높으면서 절약 금액이 큰 순서로 상위 5개 정렬
     valid_combinations.sort(key=lambda x: (x['total_price'], x['saved_money']), reverse=True)
@@ -263,7 +237,11 @@ with st.container(border=True):
     selected_events = st.multiselect("🎁 선호하는 행사 (미선택 시 전체)", options=['1+1', '2+1', '3+1'], default=['1+1', '2+1', '3+1'])
 
     # 키워드 검색창
-    search_keyword = st.text_input("🔍 특정 상품을 포함하고 싶나요?", placeholder="예: 라면, 도시락, 삼각김밥 (입력하지 않으면 전체 추천)")
+    search_keyword = st.text_input(
+        "🔍 특정 상품을 포함하고 싶나요?",
+        placeholder="예: 라면, 도시락, 삼각김밥 (입력하지 않으면 전체 추천)",
+        max_chars=SEARCH_MAX_CHARS,
+    )
 
     allowed_categories = ['식사류', '간식류', '음료', '생수']
     filtered_unique_categories = [cat for cat in df['category'].unique() if cat in allowed_categories]
@@ -322,7 +300,11 @@ if top_combinations:
             for i, item in enumerate(items):
                 with item_cols[i]:
                     brand_color = get_brand_color(item['brand'])
-                    img_url = esc_attr(item['img_url']) if pd.notna(item['img_url']) else "https://via.placeholder.com/150"
+                    img_url = (
+                        safe_img_url(item['img_url'], fallback="https://via.placeholder.com/150")
+                        if pd.notna(item['img_url'])
+                        else "https://via.placeholder.com/150"
+                    )
                     name = esc(item['name'])
                     brand = esc(item['brand'])
                     event = esc(item['event'])

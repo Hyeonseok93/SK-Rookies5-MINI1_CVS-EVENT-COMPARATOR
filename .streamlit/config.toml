@@ -5,3 +5,7 @@ backgroundColor="#0e1117"
 secondaryBackgroundColor="#161b22"
 textColor="#c9d1d9"
 font="sans serif"
+
+[server]
+# XSRF 보호 시 Streamlit이 CORS를 강제로 켭니다 (enableCORS=false 와 충돌 경고 방지)
+enableXsrfProtection = true

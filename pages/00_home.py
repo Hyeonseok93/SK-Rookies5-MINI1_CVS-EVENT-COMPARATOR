@@ -7,13 +7,18 @@ import pytz
 import streamlit.components.v1 as components
 
 from utils.brand import get_brand_color
+from utils.cart import init_cart, render_floating_cart
 from utils.data_loader import load_categorized_df
-from utils.html_safe import esc, esc_attr
+from utils.html_safe import esc, esc_attr, safe_img_url, safe_url
 from utils.news_scraper import fetch_realtime_cvs_news
-from utils.pricing import unit_price as calc_unit_price
+from utils.paths import PROJECT_ROOT
+from utils.filters import name_contains
 
 KST = pytz.timezone("Asia/Seoul")
 now_hour = datetime.now(KST).hour
+
+init_cart()
+render_floating_cart()
 
 
 def get_base64_image(image_path):
@@ -26,7 +31,7 @@ def get_base64_image(image_path):
 @st.cache_data
 def get_fixed_hot_deals(recent_keywords):
     try:
-        df_main = load_categorized_df(with_unit_price=False)
+        df_main = load_categorized_df(with_unit_price=True)
         if df_main.empty:
             return pd.DataFrame()
         df_main = df_main[df_main["event"].astype(str).str.contains(r"\+", na=False, regex=True)]
@@ -36,7 +41,7 @@ def get_fixed_hot_deals(recent_keywords):
         if recent_keywords:
             rec_list = []
             for kwd in recent_keywords:
-                matched = df_main[df_main["name"].astype(str).str.contains(kwd, case=False, na=False)]
+                matched = df_main[name_contains(df_main["name"].astype(str), kwd)]
                 rec_list.append(matched)
             if rec_list:
                 display_df = pd.concat(rec_list).drop_duplicates(subset=["name", "brand", "event"])
@@ -125,9 +130,9 @@ try:
 
         for idx, row in display_df.iterrows():
             raw_img = row["img_url"] if pd.notna(row["img_url"]) else "https://via.placeholder.com/150?text=No+Image"
-            img_url = esc_attr(raw_img)
+            img_url = safe_img_url(raw_img, fallback="https://via.placeholder.com/150?text=No+Image")
             price = int(str(row["price"]).replace(",", "")) if pd.notna(row["price"]) else 0
-            unit_price = calc_unit_price(row["event"], price)
+            unit_price = int(row.get("unit_price", price) or price)
             brand_color = get_brand_color(row["brand"])
             brand = esc(row["brand"])
             event = esc(row["event"])
@@ -181,7 +186,7 @@ except Exception:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-df_time = load_categorized_df(with_unit_price=False)
+df_time = load_categorized_df(with_unit_price=True)
 
 if not df_time.empty:
     if 6 <= now_hour < 11:
@@ -215,7 +220,7 @@ if not df_time.empty:
         cols = st.columns(5)
         for i, (_, row) in enumerate(display_items.iterrows()):
             with cols[i]:
-                img_url = esc_attr(row["img_url"]) if pd.notna(row["img_url"]) else ""
+                img_url = safe_img_url(row["img_url"]) if pd.notna(row["img_url"]) else ""
                 name = esc(row["name"])
                 event = esc(row["event"])
                 brand = esc(row["brand"])
@@ -245,146 +250,34 @@ if not df_time.empty:
 st.markdown("<br><br>", unsafe_allow_html=True)
 
 st.markdown("### 🚀 빠른 메뉴")
-r1_c1, r1_c2, r1_c3 = st.columns(3)
 
-with r1_c1:
-    st.markdown(
-        """
-        <a href="/overall_summary" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">🔍</div>
-                <div class="card-title">전체 요약</div>
-                <div class="card-desc">이미지 기반의 카드 리스트로 모든 행사 상품을 검색하고 필터링하세요.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
+MENU_CARDS = [
+    ("pages/01_overall_summary.py", "🔍", "전체 요약", "이미지 기반의 카드 리스트로 모든 행사 상품을 검색하고 필터링하세요."),
+    ("pages/02_brand_comparison.py", "📊", "브랜드별 비교", "어느 편의점이 가장 혜택이 좋을까요? 차트와 통계로 브랜드별 전략을 비교합니다."),
+    ("pages/03_best_value.py", "💎", "가성비 비교", "할인율이 가장 높은 TOP 50 상품만 모았습니다. 지갑을 지키는 가장 쉬운 방법!"),
+    ("pages/04_budget_combination.py", "🍱", "내 예산 맞춤 꿀조합 생성기", "내 예산 안에서 가장 많이 절약할 수 있는 상품들의 조합을 추천해드려요."),
+    ("pages/05_diet_guide.py", "🏋️", "다이어트 가이드", "제로 슈거, 고단백 상품들만 쏙쏙 골라 건강한 편의점 식단을 제안합니다."),
+    ("pages/06_night_snack_guide.py", "🌙", "야식 & 안주 가이드", "오늘 밤 혼술 안주와 야식을 고민하시나요? 딱 맞는 행사 안주를 찾아보세요."),
+    ("pages/08_random_picker.py", "🎁", "럭키박스", "메뉴 결정이 힘드신가요? 랜덤 럭키박스로 오늘 행운의 상품을 뽑아보세요!"),
+    ("pages/07_convenience_store_map.py", "📍", "편의점 지도", "내 주변의 편의점은 어디에 있을까요? 브랜드별 위치를 지도에서 확인하세요."),
+    ("pages/09_jackpot_game.py", "🎰", "잭팟 게임!", "똑같은 상품 3개를 맞추면 오늘 운세 대박! 행운의 메뉴를 잭팟으로 확인하세요."),
+]
 
-with r1_c2:
-    st.markdown(
-        """
-        <a href="/brand_comparison" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">📊</div>
-                <div class="card-title">브랜드별 비교</div>
-                <div class="card-desc">어느 편의점이 가장 혜택이 좋을까요? 차트와 통계로 브랜드별 전략을 비교합니다.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-with r1_c3:
-    st.markdown(
-        """
-        <a href="/best_value" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">💎</div>
-                <div class="card-title">가성비 비교</div>
-                <div class="card-desc">할인율이 가장 높은 TOP 50 상품만 모았습니다. 지갑을 지키는 가장 쉬운 방법!</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-r2_c1, r2_c2, r2_c3 = st.columns(3)
-
-with r2_c1:
-    st.markdown(
-        """
-        <a href="/budget_combination" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">🍱</div>
-                <div class="card-title">내 예산 맞춤 꿀조합 생성기</div>
-                <div class="card-desc">내 예산 안에서 가장 많이 절약할 수 있는 상품들의 조합을 추천해드려요.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-with r2_c2:
-    st.markdown(
-        """
-        <a href="/diet_guide" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">🏋️</div>
-                <div class="card-title">다이어트 가이드</div>
-                <div class="card-desc">제로 슈거, 고단백 상품들만 쏙쏙 골라 건강한 편의점 식단을 제안합니다.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-with r2_c3:
-    st.markdown(
-        """
-        <a href="/night_snack_guide" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">🌙</div>
-                <div class="card-title">야식 & 안주 가이드</div>
-                <div class="card-desc">오늘 밤 혼술 안주와 야식을 고민하시나요? 딱 맞는 행사 안주를 찾아보세요.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-r3_c1, r3_c2, r3_c3 = st.columns(3)
-
-with r3_c1:
-    st.markdown(
-        """
-        <a href="/random_picker" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">🎁</div>
-                <div class="card-title">럭키박스</div>
-                <div class="card-desc">메뉴 결정이 힘드신가요? 랜덤 럭키박스로 오늘 행운의 상품을 뽑아보세요!</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-with r3_c2:
-    st.markdown(
-        """
-        <a href="/convenience_store_map" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">📍</div>
-                <div class="card-title">편의점 지도</div>
-                <div class="card-desc">내 주변의 편의점은 어디에 있을까요? 브랜드별 위치를 지도에서 확인하세요.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
-
-with r3_c3:
-    st.markdown(
-        """
-        <a href="/jackpot_game" target="_self" style="text-decoration:none; color:inherit;">
-            <div class="dashboard-card" style="cursor:pointer;">
-                <div class="card-icon">🎰</div>
-                <div class="card-title">잭팟 게임!</div>
-                <div class="card-desc">똑같은 상품 3개를 맞추면 오늘 운세 대박! 행운의 메뉴를 잭팟으로 확인하세요.</div>
-                <div style="margin-top:20px; color:#58a6ff; font-weight:bold;">이동하기 →</div>
-            </div>
-        </a>
-    """,
-        unsafe_allow_html=True,
-    )
+for row_start in range(0, len(MENU_CARDS), 3):
+    cols = st.columns(3)
+    for col, (page, icon, title, desc) in zip(cols, MENU_CARDS[row_start : row_start + 3]):
+        with col:
+            st.markdown(
+                f"""
+                <div class="dashboard-card">
+                    <div class="card-icon">{icon}</div>
+                    <div class="card-title">{title}</div>
+                    <div class="card-desc">{desc}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            st.page_link(page, label=f"{title} 이동하기 →", use_container_width=True)
 
 st.markdown("---")
 r1, r2 = st.columns([4, 1])
@@ -404,8 +297,11 @@ try:
         badge = "🔥" if is_new else "👉"
         brand = esc(row["brand"])
         title = esc(row["title"])
-        link = esc(row["link"])
-        st.markdown(f"- {badge} **[{brand}]** [{title}]({link})", unsafe_allow_html=True)
+        link = safe_url(row["link"])
+        if link == "#":
+            st.markdown(f"- {badge} **[{brand}]** {title}", unsafe_allow_html=True)
+        else:
+            st.markdown(f"- {badge} **[{brand}]** [{title}]({link})", unsafe_allow_html=True)
 except Exception:
     st.caption("현재 행사 소식을 불러올 수 없습니다.")
 
@@ -414,10 +310,10 @@ st.markdown("### 🏢 함께하는 브랜드")
 l1, l2, l3, l4 = st.columns(4)
 
 logos = {
-    "CU": "assets/logo_cu.png",
-    "GS25": "assets/logo_gs25.png",
-    "7Eleven": "assets/logo_7eleven.png",
-    "emart24": "assets/logo_emart24.png",
+    "CU": os.path.join(PROJECT_ROOT, "assets", "logo_cu.png"),
+    "GS25": os.path.join(PROJECT_ROOT, "assets", "logo_gs25.png"),
+    "7Eleven": os.path.join(PROJECT_ROOT, "assets", "logo_7eleven.png"),
+    "emart24": os.path.join(PROJECT_ROOT, "assets", "logo_emart24.png"),
 }
 
 for col, (name, path) in zip([l1, l2, l3, l4], logos.items()):

@@ -15,11 +15,14 @@ def test():
     manager.start()
     test_id = "test_job_123"
     manager.add_job(
-        day=1, hour=0, minute=0,
-        year=2026, month=2,
+        hour=6,
+        minute=0,
+        day=None,
+        year=2026,
+        month=2,
         batch_name="테스트배치",
         job_id=test_id,
-        dry_run=True
+        dry_run=True,
     )
 
     print("\n--- [START] 스케줄러 즉시 실행 테스트 ---")

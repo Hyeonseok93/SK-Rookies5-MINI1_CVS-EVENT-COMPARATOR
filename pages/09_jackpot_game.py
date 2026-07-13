@@ -4,7 +4,7 @@ import time
 
 from utils.cart import init_cart, add_to_cart, is_in_cart, remove_from_cart, render_floating_cart
 from utils.data_loader import load_categorized_df
-from utils.html_safe import esc, esc_attr
+from utils.html_safe import esc, safe_img_url
 
 df = load_categorized_df(with_unit_price=True)
 game_df = df[
@@ -19,17 +19,10 @@ render_floating_cart()
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
-    
     html, body, [class*="css"] {
-        font-family: 'Pretendard', sans-serif;
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     }
 
-    .stApp {
-        background-color: #111111;
-    }
-
-    /* 프리미엄 헤더 */
     .premium-header {
         background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
         border-radius: 24px;
@@ -70,15 +63,9 @@ st.markdown(
         text-align: center;
     }
 
-    /* 버튼을 감싸는 div 자체를 flex 중앙 정렬 */
-    div.stButton {
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-
-    div.stButton > button {
+    /* 잭팟 페이지 버튼만 — 전역 stButton 금지 (플로팅 장바구니/챗봇 보호) */
+    div[class*="st-key-jackpot_start"] button,
+    div[class*="st-key-jackpot_cart_btn"] button {
         background: #3182F6 !important;
         color: white !important;
         border-radius: 18px !important;
@@ -87,11 +74,12 @@ st.markdown(
         font-weight: 700 !important;
         border: none !important;
         box-shadow: 0 10px 20px rgba(49, 130, 246, 0.35) !important;
-        width: 100%;
+        width: 100% !important;
         transition: all 0.2s ease-in-out !important;
     }
 
-    div.stButton > button:hover {
+    div[class*="st-key-jackpot_start"] button:hover,
+    div[class*="st-key-jackpot_cart_btn"] button:hover {
         transform: scale(1.03);
         background-color: #1B64DA !important;
     }
@@ -134,7 +122,7 @@ if not game_df.empty:
     for i in range(3):
         with cols[i]:
             if slots:
-                img_url = esc_attr(slots[i].get("img_url", ""))
+                img_url = safe_img_url(slots[i].get("img_url", ""))
                 name = esc(slots[i].get("name", ""))
                 st.markdown(
                     f"""
@@ -156,7 +144,7 @@ if not game_df.empty:
 
     _, btn_col, _ = st.columns([1, 2, 1])
     with btn_col:
-        if st.button(f"🎰 {selected_cat} 잭팟 시작하기", use_container_width=True):
+        if st.button(f"🎰 {selected_cat} 잭팟 시작하기", use_container_width=True, key="jackpot_start"):
             with st.spinner("돌아가는 중..."):
                 time.sleep(1.0)
                 if random.random() < 0.3:
@@ -180,8 +168,6 @@ if not game_df.empty:
                 <h2 style="color: white;">슈퍼 잭팟 달성!</h2>
                 <p style="color: #3182F6; font-size: 1.5rem; font-weight: 700;">{jackpot_name}</p>
             </div>
-            <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-            <script>confetti({{ particleCount: 150, spread: 70, origin: {{ y: 0.6 }} }});</script>
         """,
             unsafe_allow_html=True,
         )

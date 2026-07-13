@@ -93,90 +93,102 @@ def get_next_month_data_batch(year: int, month: int, run_time: datetime, dry_run
     write_log(f'Target Month: {year}-{month} (yymm={yymm}) | Batch ID Time: {run_time.strftime("%H:%M:%S")}', run_time)
     write_log(f'Data directory: {data_dir}', run_time)
 
-    # 3. 스크래퍼 패칭
+    # dry-run: 크롤/정제/분류/뉴스 전부 스킵 (카탈로그 오염 방지)
+    if dry_run:
+        write_log('Dry run enabled: Skipping crawl, clean, categorize, and news.', run_time)
+        write_log('=== BATCH DRY-RUN COMPLETE ===', run_time)
+        return True
+
+    # 파일명 스탬프 = 대상 연월 + 실행일 (ready 체크의 yymm prefix와 일치)
+    file_stamp = f"{yymm}{run_time.day:02d}"
+    os.environ["BATCH_FILE_STAMP"] = file_stamp
+    write_log(f'BATCH_FILE_STAMP={file_stamp}', run_time)
+
+    # 스크래퍼 datetime 패치 (start_ts용) + base 모듈도 동일 패치
     mods = [
-        'scraper.seven_eleven_scraper',
-        'scraper.cu_scraper',
-        'scraper.gs25_scraper',
-        'scraper.emart24_scraper'
+        "scraper.base",
+        "scraper.seven_eleven_scraper",
+        "scraper.cu_scraper",
+        "scraper.gs25_scraper",
+        "scraper.emart24_scraper",
     ]
     time_patch = make_datetime(run_time)
 
     for m in mods:
         try:
             mod = importlib.import_module(m)
-            setattr(mod, 'datetime', time_patch)
-            write_log(f'Module patched: {m}', run_time)
+            setattr(mod, "datetime", time_patch)
+            write_log(f"Module patched: {m}", run_time)
         except Exception as e:
-            write_log(f'Failed to patch {m}: {e}', run_time)
+            write_log(f"Failed to patch {m}: {e}", run_time)
 
     crawl_ok = True
     crawl_results = {}
 
-    # 4. 크롤링 실행
-    if dry_run:
-        write_log('Dry run enabled: Skipping actual crawler execution.', run_time)
-    else:
-        crawlers = [
-            ('7Eleven', 'scraper.seven_eleven_scraper', 'crawl_7eleven', None),
-            ('CU', 'scraper.cu_scraper', 'CUCrawler', 'run'),
-            ('GS25', 'scraper.gs25_scraper', 'scrape_gs25_event_goods', None),
-            ('emart24', 'scraper.emart24_scraper', 'Emart24Scraper', 'run'),
-        ]
+    crawlers = [
+        ("7Eleven", "scraper.seven_eleven_scraper", "crawl_7eleven", None),
+        ("CU", "scraper.cu_scraper", "CUCrawler", "run"),
+        ("GS25", "scraper.gs25_scraper", "scrape_gs25_event_goods", None),
+        ("emart24", "scraper.emart24_scraper", "Emart24Scraper", "run"),
+    ]
 
-        for brand, module_name, attr, method in crawlers:
-            try:
-                mod = importlib.import_module(module_name)
-                target = getattr(mod, attr)
-                if method:
-                    getattr(target(), method)()
-                else:
-                    target()
-                ready = _brand_csv_ready(data_dir, brand, yymm)
-                crawl_results[brand] = ready
-                if ready:
-                    write_log(f'Finished: {brand}', run_time)
-                else:
-                    crawl_ok = False
-                    write_log(f'{brand} finished but no {brand}_{yymm}*.csv found', run_time)
-            except Exception as e:
+    for brand, module_name, attr, method in crawlers:
+        try:
+            mod = importlib.import_module(module_name)
+            target = getattr(mod, attr)
+            if method:
+                getattr(target(), method)()
+            else:
+                target()
+            ready = _brand_csv_ready(data_dir, brand, yymm)
+            crawl_results[brand] = ready
+            if ready:
+                write_log(f"Finished: {brand}", run_time)
+            else:
                 crawl_ok = False
-                crawl_results[brand] = False
-                write_log(f'{brand} failed: {e}', run_time)
+                write_log(f"{brand} finished but no {brand}_{yymm}*.csv found", run_time)
+        except Exception as e:
+            crawl_ok = False
+            crawl_results[brand] = False
+            write_log(f"{brand} failed: {e}", run_time)
 
-        write_log(f'Crawl summary: {crawl_results}', run_time)
+    write_log(f"Crawl summary: {crawl_results}", run_time)
 
-    # 5. 후처리 — 크롤 실패 시 기존 카탈로그를 덮어쓰지 않음
-    if not dry_run and not crawl_ok:
-        write_log('SKIP post-process: one or more brand crawls failed. Keeping existing cleaned/categorized data.', run_time)
-        write_log('=== BATCH ABORTED (incomplete crawl) ===', run_time)
+    if not crawl_ok:
+        write_log(
+            "SKIP post-process: one or more brand crawls failed. Keeping existing cleaned/categorized data.",
+            run_time,
+        )
+        write_log("=== BATCH ABORTED (incomplete crawl) ===", run_time)
         return False
 
     try:
         from utils.data_cleaner_batch import clean_and_merge_batch
+
         cleaned = clean_and_merge_batch(year=year, month=month)
         if cleaned is None:
-            write_log('data_cleaner produced no output — skip categorize', run_time)
-            write_log('=== BATCH ABORTED (clean failed) ===', run_time)
+            write_log("data_cleaner produced no output — skip categorize", run_time)
+            write_log("=== BATCH ABORTED (clean failed) ===", run_time)
             return False
-        write_log('Finished: data_cleaner', run_time)
+        write_log("Finished: data_cleaner", run_time)
 
         from utils.data_categorize import run_categorization
+
         run_categorization()
-        write_log('Finished: data_categorize', run_time)
+        write_log("Finished: data_categorize", run_time)
     except Exception as e:
-        write_log(f'Post-processing failed: {e}', run_time)
-        write_log('=== BATCH ABORTED (post-process error) ===', run_time)
+        write_log(f"Post-processing failed: {e}", run_time)
+        write_log("=== BATCH ABORTED (post-process error) ===", run_time)
         return False
 
-    # 6. 행사 뉴스 — 실패해도 상품 카탈로그 배치는 성공으로 유지
-    if not dry_run:
-        try:
-            from scraper.event_news_scraper import scrape_official_events
-            scrape_official_events()
-            write_log('Finished: event_news_scraper', run_time)
-        except Exception as e:
-            write_log(f'event_news_scraper failed (non-fatal): {e}', run_time)
+    # 행사 뉴스 — 실패해도 상품 카탈로그 배치는 성공으로 유지
+    try:
+        from scraper.event_news_scraper import scrape_official_events
 
-    write_log('=== BATCH COMPLETE ===', run_time)
+        scrape_official_events()
+        write_log("Finished: event_news_scraper", run_time)
+    except Exception as e:
+        write_log(f"event_news_scraper failed (non-fatal): {e}", run_time)
+
+    write_log("=== BATCH COMPLETE ===", run_time)
     return True

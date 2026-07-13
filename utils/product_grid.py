@@ -6,7 +6,7 @@ import streamlit as st
 
 from utils.brand import get_brand_color
 from utils.cart import render_cart_button
-from utils.html_safe import esc, esc_attr
+from utils.html_safe import esc, safe_img_url
 
 
 def paginate(
@@ -31,7 +31,7 @@ def paginate(
 
 
 def product_card_html(row) -> str:
-    img_url = esc_attr(row["img_url"]) if pd.notna(row.get("img_url")) else ""
+    img_url = safe_img_url(row["img_url"]) if pd.notna(row.get("img_url")) else ""
     name = esc(row.get("name", ""))
     brand = esc(row.get("brand", ""))
     event = esc(row.get("event", ""))

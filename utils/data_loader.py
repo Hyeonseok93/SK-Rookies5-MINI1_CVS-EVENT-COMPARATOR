@@ -8,7 +8,7 @@ import streamlit as st
 
 from utils.brand import normalize_brand
 from utils.paths import categorized_path
-from utils.pricing import discount_num, discount_rate, pay_and_total_counts, unit_price
+from utils.pricing import discount_num, discount_rate, pay_and_total_counts
 
 
 def _normalize_frame(df: pd.DataFrame) -> pd.DataFrame:
@@ -22,6 +22,19 @@ def _normalize_frame(df: pd.DataFrame) -> pd.DataFrame:
     if "brand" in out.columns:
         out["brand"] = out["brand"].map(normalize_brand)
     return out
+
+
+def _unit_price_vectorized(events: pd.Series, prices: pd.Series) -> pd.Series:
+    e = events.astype(str).str.replace(" ", "", regex=False)
+    p = prices.astype(int)
+    out = p.copy()
+    m1 = e == "1+1"
+    m2 = e == "2+1"
+    m3 = e == "3+1"
+    out = out.mask(m1, p // 2)
+    out = out.mask(m2, (p * 2) // 3)
+    out = out.mask(m3, (p * 3) // 4)
+    return out.astype(int)
 
 
 @st.cache_data(ttl=3600)
@@ -38,7 +51,7 @@ def load_categorized_df(
     df = _normalize_frame(pd.read_csv(path))
 
     if with_unit_price and not df.empty:
-        df["unit_price"] = df.apply(lambda r: unit_price(r["event"], r["price"]), axis=1)
+        df["unit_price"] = _unit_price_vectorized(df["event"], df["price"])
         df["discount_rate"] = df["event"].map(discount_rate)
 
     if with_discount_num and not df.empty:

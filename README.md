@@ -21,7 +21,7 @@
 
 1. **자동화된 데이터 파이프라인 (Data Pipeline & Batch Scheduler)**
    - Selenium & BeautifulSoup 기반의 개별 크롤러 탑재.
-   - `APScheduler`를 활용하여 매월/매주 주기적으로 편의점 4사의 행사 상품 목록을 자동으로 갱신하고 클렌징하는 배치 스크립트 구축.
+   - `APScheduler`를 활용하여 매일 주기적으로 편의점 4사의 행사 상품 목록을 자동으로 갱신하고 클렌징하는 배치 스크립트 구축.
 2. **AI RAG 기반 편의점 추천 챗봇 (Groq Llama-3 Chatbot)**
    - 사용자의 입력 키워드를 기반으로 상품 데이터베이스(CSV)를 필터링하여 컨텍스트(Context)로 전달하는 실시간 룰 기반 챗봇 서비스 설계.
    - 자연스러운 한국어로 상품 정보 및 페어링 팁을 알려주는 대화형 에이전트 구현.
@@ -96,10 +96,12 @@ conv-dashboard/
 ┃   ┣━━ 🖼️ logo_gs25.png            # GS25 브랜드 로고
 ┃   ┣━━ 🖼️ logo_7eleven.png         # 세븐일레븐 브랜드 로고
 ┃   ┗━━ 🖼️ logo_emart24.png         # 이마트24 브랜드 로고
-┣━━ 📂 batch/                       # 데이터 수집 자동화 및 스케줄러
+┣━━ 📂 batch/                       # 데이터 수집 자동화 및 스케줄러 (UI와 분리)
 ┃   ┣━━ 📂 script/
 ┃   ┃   ┗━━ 📄 crawl_batch_script.py # 통합 크롤링 및 정제 실행 자동화 스크립트
 ┃   ┣━━ 📄 batch_scheduler_manager.py # 백그라운드 APScheduler 스케줄러 관리자
+┃   ┣━━ 📄 run_scheduler.py         # 스케줄러 상시 실행 (매일 06:00)
+┃   ┣━━ 📄 run_once.py              # 배치 1회 즉시 실행
 ┃   ┗━━ 📄 __init__.py
 ┣━━ 📂 data/                        # 데이터 저장소 (CSV)
 ┃   ┣━━ 📄 CU_260224.csv            # 브랜드별 수집 원본 로우 데이터
@@ -130,11 +132,12 @@ conv-dashboard/
 ┃   ┗━━ 📄 __init__.py
 ┣━━ 📂 test/                        # 스케줄러 기능 검증 및 개별 스크립트 테스트 폴더
 ┣━━ 📂 utils/                       # 공통 유틸리티 및 AI/시각화 모듈
-┃   ┣━━ 📄 data_cleaner.py          # 수집 데이터 텍스트 정제 및 중복 제어
+┃   ┣━━ 📄 data_cleaner.py          # 수집 데이터 텍스트 정제 및 중복 제어 (공유 코어)
+┃   ┣━━ 📄 data_cleaner_batch.py    # YYMM 파일 선택 후 공유 코어로 정제
 ┃   ┣━━ 📄 data_categorize.py       # 상품명 키워드 패턴 매칭 기반 카테고리 분류 엔진
+┃   ┣━━ 📄 data_loader.py           # 카탈로그 CSV 캐시 로더
+┃   ┣━━ 📄 theme_guide.py           # 다이어트/야식 테마 가이드 공통 UI
 ┃   ┣━━ 📄 chatbot.py               # Groq API 활용 LLM Chatbot 로직
-┃   ┣━━ 📄 brandname_visual.py      # 브랜드 통계 차트 생성
-┃   ┣━━ 📄 graph.py                 # 가격 통계 분석 시각화
 ┃   ┣━━ 📄 cart.py                  # 장바구니/장바구니 찜하기 데이터 유지 관리
 ┃   ┣━━ 📄 news_scraper.py          # 네이버/다음 뉴스 포털 크롤링 래퍼
 ┃   ┗━━ 📄 __init__.py
@@ -183,10 +186,22 @@ cd SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR
 
 ```bash
 python -m venv venv
-source venv/Scripts/activate  # Windows (CMD/PowerShell)
-# 또는
-source venv/bin/activate      # Mac/Linux
+```
 
+가상환경 활성화:
+
+```bat
+:: Windows CMD
+venv\Scripts\activate.bat
+
+:: Windows PowerShell
+venv\Scripts\Activate.ps1
+
+:: Mac/Linux
+source venv/bin/activate
+```
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -200,13 +215,40 @@ GROQ_API_KEY=your_groq_api_key_here
 
 ### 4. 대시보드 애플리케이션 실행
 
+Windows CMD 예시:
+
+```bat
+venv\Scripts\activate.bat
+streamlit run app.py
+```
+
+Mac/Linux / 이미 가상환경이 켜진 경우:
+
 ```bash
 streamlit run app.py
 ```
 
-### 5. 수동 데이터 크롤링 및 업데이트 (선택 사항)
+> 스케줄러는 Streamlit과 **분리**되어 있습니다. UI만 띄울 때는 위 명령만 사용하세요.
 
-스케줄러가 백그라운드에서 동작하지만, 데이터를 즉시 업데이트하고 싶다면 아래 명령어를 순서대로 실행합니다:
+### 5. 일간 배치 스케줄러 (선택)
+
+대시보드와 **별도 프로세스**로 스케줄러를 띄웁니다 (매일 06:00 KST).
+
+```bash
+python -m batch.run_scheduler
+```
+
+즉시 한 번만 돌리려면:
+
+```bash
+python -m batch.run_once
+# 점검만: python -m batch.run_once --dry-run
+# 특정 달: python -m batch.run_once --year 2026 --month 7
+```
+
+### 6. 수동 데이터 크롤링 및 업데이트 (선택 사항)
+
+데이터를 즉시 업데이트하고 싶다면 아래 명령어를 순서대로 실행합니다:
 
 ```bash
 # 편의점 4사 데이터 스크래핑 실행
@@ -245,8 +287,8 @@ python utils/data_categorize.py
 편의점 4사(7-Eleven, CU, GS25, Emart24)의 행사 정보를 자동으로 수집하고 분류하는 배치
 
 ### 📅 실행 스케줄
-- **실행 일시**: 매달 1일 00:30 (KST 기준)
-- **주요 목적**: 새로운 달의 시작과 동시에 변경되는 행사 정보를 즉시 수집하여 업데이트(최신화)
+- **실행 일시**: 매일 06:00 (KST 기준)
+- **주요 목적**: 편의점 행사 정보를 매일 수집·정제하여 대시보드 데이터를 최신화
 
 ### 🛠 주요 기능
 1. **데이터 크롤링**: 각 편의점 사이트의 최신 행사 데이터를 수집합니다.
@@ -254,9 +296,10 @@ python utils/data_categorize.py
 3. **자동 분류**: 수집된 상품명을 분석하여 식사류, 간식류, 음료 등의 카테고리로 자동 매핑합니다.
 
 ### 📂 디렉토리 구조
-- `batch/`: 배치 스크립트 메인 로직 및 스케쥴러 관리
-  - `script/`: 배치 스크립트 위치(ex) ABC배치, 26_2배치 등등)
-  - `batch_scheduler_manager.py`: 배치 스케쥴러 설정 및 실행
+- `batch/`: 배치 스크립트 메인 로직 및 스케줄러 관리 (**Streamlit과 별도 프로세스**)
+  - `script/`: 배치 스크립트 위치
+  - `batch_scheduler_manager.py`: 배치 스케줄러 설정
+  - `run_scheduler.py`: `python -m batch.run_scheduler` 진입점
 - `test/`: 배치 스크립트 테스트 케이스 및 테스트코드
 
 ### 🧪 테스트 및 참고 사항
@@ -267,6 +310,10 @@ cd test
 python batch_script_test.py
 ```
 
+스케줄러 상시 기동 예:
+```bash
+python -m batch.run_scheduler
+```
 ---
 
 &nbsp;

@@ -57,6 +57,10 @@ def get_pretty_popup(row):
 st.title("📍 편의점 지도")
 st.caption("지역을 선택하여 상세 위치를 확인하세요. (스크롤이 유지됩니다)")
 
+if df_all.empty:
+    st.warning("지도 데이터(`filtered_convenience_stores.csv`)를 찾을 수 없습니다.")
+    st.stop()
+
 
 @st.fragment
 def map_section():

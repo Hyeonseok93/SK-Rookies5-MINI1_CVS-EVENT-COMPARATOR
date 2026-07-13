@@ -6,58 +6,51 @@ import streamlit as st
 
 from utils.html_safe import esc
 
-# 행사 유형별 최적 묶음 단위
 EVENT_UNITS = {
-    '1+1': 2,
-    '2+1': 3,
-    '3+1': 4,
+    "1+1": 2,
+    "2+1": 3,
+    "3+1": 4,
 }
 
 
 def init_cart():
-    """장바구니 세션 상태 초기화"""
-    if 'cart' not in st.session_state:
+    if "cart" not in st.session_state:
         st.session_state.cart = {}
 
 
 def add_to_cart(name: str, brand: str, event: str, price: int, unit_price: int):
-    """장바구니에 상품 추가 (이미 있으면 수량 +1)"""
     init_cart()
     key = (name, brand, event)
     if key in st.session_state.cart:
-        st.session_state.cart[key]['qty'] += 1
+        st.session_state.cart[key]["qty"] += 1
     else:
         st.session_state.cart[key] = {
-            'name': name,
-            'brand': brand,
-            'event': event,
-            'unit_price': unit_price,
-            'price': price,
-            'qty': 1,
+            "name": name,
+            "brand": brand,
+            "event": event,
+            "unit_price": unit_price,
+            "price": price,
+            "qty": 1,
         }
 
 
 def remove_from_cart(key):
-    """장바구니에서 상품 제거"""
     init_cart()
     if key in st.session_state.cart:
         del st.session_state.cart[key]
 
 
 def is_in_cart(name: str, brand: str, event: str) -> bool:
-    """상품이 장바구니에 있는지 확인"""
     init_cart()
     return (name, brand, event) in st.session_state.cart
 
 
 def get_cart_count() -> int:
-    """장바구니 전체 수량 합계"""
     init_cart()
-    return sum(v['qty'] for v in st.session_state.cart.values())
+    return sum(v["qty"] for v in st.session_state.cart.values())
 
 
 def calc_actual_total(price: int, event: str, qty: int) -> int:
-    """행사 적용 실제 결제금액 계산"""
     unit = EVENT_UNITS.get(event, 1)
     if unit == 1:
         return price * qty
@@ -68,33 +61,31 @@ def calc_actual_total(price: int, event: str, qty: int) -> int:
 
 
 def calc_total_received(event: str, qty: int) -> int:
-    """증정 포함 실제 받는 총 개수"""
-    if event == '1+1':
+    if event == "1+1":
         return qty * 2
-    if event == '2+1':
+    if event == "2+1":
         return qty + qty // 2
-    if event == '3+1':
+    if event == "3+1":
         return qty + qty // 3
     return qty
 
 
 def render_cart_warning(item: dict):
-    """행사 최적 수량 경고 배너 렌더링"""
-    event = item['event']
+    event = item["event"]
     unit = EVENT_UNITS.get(event, 1)
     if unit == 1:
         return
 
-    qty = item['qty']
+    qty = item["qty"]
     pay_needed = unit - 1
     if qty % pay_needed == 0:
         return
 
     need = pay_needed - (qty % pay_needed)
     optimal_qty = qty + need
-    optimal_total = item['price'] * pay_needed
+    optimal_total = item["price"] * pay_needed
     optimal_unit = optimal_total // unit
-    current_unit = item['price']
+    current_unit = item["price"]
     event_esc = esc(event)
 
     st.markdown(
@@ -119,13 +110,8 @@ def render_cart_warning(item: dict):
 
 
 def render_cart_button(row, button_key: str):
-    """
-    상품 카드 하단에 장바구니 담기/취소 버튼을 렌더링합니다.
-    row: pandas Series (name, brand, event, price, unit_price 필드 필요)
-    button_key: 고유한 버튼 키 문자열
-    """
     init_cart()
-    cart_key = (row['name'], row['brand'], row['event'])
+    cart_key = (row["name"], row["brand"], row["event"])
     in_cart = cart_key in st.session_state.cart
 
     if in_cart:
@@ -135,34 +121,39 @@ def render_cart_button(row, button_key: str):
     else:
         if st.button("🛒 담기", key=button_key, use_container_width=True):
             add_to_cart(
-                name=row['name'],
-                brand=row['brand'],
-                event=row['event'],
-                price=int(row['price']),
-                unit_price=int(row['unit_price']),
+                name=row["name"],
+                brand=row["brand"],
+                event=row["event"],
+                price=int(row["price"]),
+                unit_price=int(row["unit_price"]),
             )
             st.rerun()
 
 
 def render_floating_cart():
-    """
-    우측 상단 고정 장바구니 팝오버.
-    #cvs-cart-anchor 인접 형제만 스타일해 챗봇 FAB과 충돌하지 않습니다.
-    """
+    """우상단 🛒 — keyed container로 챗봇 FAB와 CSS 분리 (Streamlit 1.54 호환)."""
     init_cart()
     total_items = get_cart_count()
 
     st.markdown(
         """
-        <div id="cvs-cart-anchor"></div>
         <style>
-        div.element-container:has(#cvs-cart-anchor) + div.element-container div[data-testid="stPopover"] > div:first-child {
+        div[class*="st-key-cvs_floating_cart"] div[data-testid="stPopover"] {
             position: fixed !important;
             top: 60px !important;
             right: 80px !important;
+            bottom: auto !important;
+            left: auto !important;
+            width: auto !important;
+            height: auto !important;
             z-index: 99999 !important;
         }
-        div.element-container:has(#cvs-cart-anchor) + div.element-container div[data-testid="stPopover"] > div:first-child button {
+        div[class*="st-key-cvs_floating_cart"] div[data-testid="stPopover"] > div:first-child {
+            width: auto !important;
+            height: auto !important;
+        }
+        div[class*="st-key-cvs_floating_cart"] div[data-testid="stPopover"] button,
+        div[class*="st-key-cvs_floating_cart"] [data-testid="stPopoverButton"] {
             background: linear-gradient(135deg, #ff6b6b, #ee5253) !important;
             color: white !important;
             border: none !important;
@@ -173,12 +164,21 @@ def render_floating_cart():
             box-shadow: 0 4px 15px rgba(255, 107, 107, 0.45) !important;
             cursor: pointer !important;
             white-space: nowrap !important;
+            width: auto !important;
+            height: auto !important;
+            min-width: auto !important;
         }
-        div.element-container:has(#cvs-cart-anchor) + div.element-container div[data-testid="stPopoverBody"] {
-            min-width: 360px !important;
-            max-height: 72vh !important;
-            overflow-y: auto !important;
-            padding: 20px !important;
+        div[class*="st-key-cvs_floating_cart"] div[data-testid="stPopover"] button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6) !important;
+        }
+        div[data-testid="stPopoverBody"]:not(:has([data-testid="stChatInput"])) {
+            width: 380px !important;
+            max-width: 90vw !important;
+        }
+        div[data-testid="stPopoverBody"]:not(:has([data-testid="stChatInput"]))
+        [data-testid="stHorizontalBlock"] {
+            gap: 0.4rem !important;
         }
         </style>
         """,
@@ -188,66 +188,68 @@ def render_floating_cart():
     cart = st.session_state.cart
     badge = f"🛒 {total_items}개" if total_items > 0 else "🛒 0개"
 
-    with st.popover(badge):
-        st.markdown("### 🛒 장바구니")
+    # popover() has no key on Streamlit 1.54 — scope CSS via keyed container
+    with st.container(key="cvs_floating_cart"):
+        with st.popover(badge):
+            st.markdown("### 🛒 장바구니")
 
-        if not cart:
-            st.info("담긴 상품이 없습니다.")
-            return
+            if not cart:
+                st.info("담긴 상품이 없습니다.")
+                return
 
-        total_price = 0
-        total_saved = 0
+            total_price = 0
+            total_saved = 0
 
-        for key, item in list(cart.items()):
-            item_total = calc_actual_total(item['price'], item['event'], item['qty'])
-            total_received = calc_total_received(item['event'], item['qty'])
-            unit_price_actual = item_total // total_received if total_received > 0 else item_total
-            total_price += item_total
-            total_saved += item['price'] * item['qty'] - item_total
+            for key, item in list(cart.items()):
+                item_total = calc_actual_total(item["price"], item["event"], item["qty"])
+                total_received = calc_total_received(item["event"], item["qty"])
+                unit_price_actual = (
+                    item_total // total_received if total_received > 0 else item_total
+                )
+                total_price += item_total
+                total_saved += item["price"] * item["qty"] - item_total
 
-            st.markdown(f"**{item['name']}**")
-            st.caption(f"📍 {item['brand']} | {item['event']}")
+                st.markdown(f"**{esc(item['name'])}**")
+                st.caption(f"📍 {esc(item['brand'])} | {esc(item['event'])}")
 
-            qty_col, del_col = st.columns([3, 1])
-            with qty_col:
-                minus_col, num_col, plus_col = st.columns([1, 1, 1])
+                minus_col, num_col, plus_col, del_col = st.columns(4, gap="small")
                 with minus_col:
-                    if st.button("－", key=f"fc_minus_{key}"):
-                        if st.session_state.cart[key]['qty'] > 1:
-                            st.session_state.cart[key]['qty'] -= 1
+                    if st.button("－", key=f"fc_minus_{key}", use_container_width=True):
+                        if st.session_state.cart[key]["qty"] > 1:
+                            st.session_state.cart[key]["qty"] -= 1
                         else:
                             del st.session_state.cart[key]
                         st.rerun()
                 with num_col:
                     st.markdown(
-                        f"<div style='text-align:center;padding-top:6px'>{item['qty']}</div>",
+                        f"<div style='text-align:center;padding-top:8px;font-weight:700;'>{item['qty']}</div>",
                         unsafe_allow_html=True,
                     )
                 with plus_col:
-                    if st.button("＋", key=f"fc_plus_{key}"):
-                        st.session_state.cart[key]['qty'] += 1
+                    if st.button("＋", key=f"fc_plus_{key}", use_container_width=True):
+                        st.session_state.cart[key]["qty"] += 1
                         st.rerun()
-            with del_col:
-                if st.button("🗑", key=f"fc_del_{key}"):
-                    del st.session_state.cart[key]
-                    st.rerun()
+                with del_col:
+                    if st.button("🗑", key=f"fc_del_{key}", use_container_width=True):
+                        del st.session_state.cart[key]
+                        st.rerun()
 
-            render_cart_warning(item)
-            st.markdown(f"결제 예상: **{item_total:,}원** (총 {total_received}개)")
-            st.caption(f"개당 {unit_price_actual:,}원")
-            st.markdown("---")
+                render_cart_warning(item)
+                st.markdown(f"결제 예상: **{item_total:,}원** (총 {total_received}개)")
+                st.caption(f"개당 {unit_price_actual:,}원")
+                st.markdown("---")
 
-        st.markdown(
-            f"""
-            <div style="background:#1e3a5f;border-radius:10px;padding:14px;text-align:center;margin-bottom:8px;">
-                <div style="color:#aaa;font-size:0.8rem;">총 결제 예상금액</div>
-                <div style="color:#fff;font-size:1.5rem;font-weight:900;">{total_price:,}원</div>
-                <div style="color:#4caf50;font-size:0.85rem;margin-top:4px;">{total_saved:,}원 절약 중!</div>
-                <div style="color:#ff6b6b;font-size:0.75rem;margin-top:2px;">※ 행사 적용 실제 결제가 기준</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if st.button("🗑️ 전체 비우기", use_container_width=True, key="fc_clear_all"):
-            st.session_state.cart = {}
-            st.rerun()
+            st.markdown(
+                f"""
+                <div style="width:100%;box-sizing:border-box;background:#1e3a5f;border-radius:10px;padding:14px;text-align:center;margin-bottom:8px;">
+                    <div style="color:#aaa;font-size:0.8rem;">총 결제 예상금액</div>
+                    <div style="color:#fff;font-size:1.5rem;font-weight:900;">{total_price:,}원</div>
+                    <div style="color:#4caf50;font-size:0.85rem;margin-top:4px;">💚 {total_saved:,}원 절약 중!</div>
+                    <div style="color:#ff6b6b;font-size:0.75rem;margin-top:2px;">※ 행사 적용 실제 결제가 기준</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            if st.button("🗑️ 전체 비우기", use_container_width=True, key="fc_clear_all"):
+                st.session_state.cart = {}
+                st.rerun()

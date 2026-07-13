@@ -2,20 +2,20 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+from utils.brand import BRAND_COLORS
+from utils.cart import init_cart, render_floating_cart
 from utils.data_loader import load_categorized_df
 from utils.filters import render_product_filters
 
-df = load_categorized_df()
+df = load_categorized_df(with_discount_num=True)
+
+init_cart()
+render_floating_cart()
 
 st.title("📊 브랜드별 행사 비교")
 
 if not df.empty:
-    brand_colors = {
-        "CU": "#9BC621",
-        "7Eleven": "#008135",
-        "emart24": "#FFB71B",
-        "GS25": "#0095D3",
-    }
+    brand_colors = BRAND_COLORS
 
     state = render_product_filters(df, key_prefix="brand_cmp")
     sort_option = state.sort_option
@@ -113,18 +113,8 @@ if not df.empty:
 
         st.subheader("📉 브랜드별 평균 할인율")
 
-        filtered_df = filtered_df.copy()
-        filtered_df["discount_rate"] = 0.0
-
-        valid_mask = filtered_df["price"] > 0
-        filtered_df.loc[valid_mask, "discount_rate"] = (
-            (filtered_df.loc[valid_mask, "price"] - filtered_df.loc[valid_mask, "unit_price"])
-            / filtered_df.loc[valid_mask, "price"]
-            * 100
-        )
-
-        discount_df = filtered_df[filtered_df["discount_rate"] > 0]
-        avg_discount_dict = dict(discount_df.groupby("brand")["discount_rate"].mean())
+        discount_df = filtered_df[filtered_df["discount_num"] > 0]
+        avg_discount_dict = dict(discount_df.groupby("brand")["discount_num"].mean())
 
         avg_discount = pd.DataFrame(
             {"브랜드": brand_order, "평균할인율": [avg_discount_dict.get(b, 0) for b in brand_order]}

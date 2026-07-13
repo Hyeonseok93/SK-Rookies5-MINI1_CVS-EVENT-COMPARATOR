@@ -2,34 +2,23 @@ import streamlit as st
 import os
 import pandas as pd
 
-from batch.batch_scheduler_manager import get_scheduler_manager
 from utils.chatbot import show_chatbot
 from utils.cart import init_cart
 from utils.paths import categorized_path
 from utils.ui_css import inject_app_css
 
 st.set_page_config(page_title="편의점 행사 대시보드", page_icon="🏪", layout="wide")
-scheduler = get_scheduler_manager()
-scheduler.add_job(
-    day=1,
-    hour=0,
-    minute=30,
-    year=None,
-    month=None,
-    batch_name="정기 월간 데이터 최신화 배치",
-    job_id="run_monthly_batch_task",
-    dry_run=False
-)
 
 # 세션 메모리 초기화
-if 'recent_keywords' not in st.session_state:
-    st.session_state['recent_keywords'] = []
+if "recent_keywords" not in st.session_state:
+    st.session_state["recent_keywords"] = []
 
 # 장바구니 세션 초기화
 init_cart()
 
 # CSS 로드 (모든 페이지 공통 — 페이지에서 재주입하지 않음)
 inject_app_css()
+
 
 # 데이터 로드 (사이드바 통계용)
 @st.cache_data(ttl=3600)
@@ -40,8 +29,9 @@ def get_summary_stats():
     df = pd.read_csv(file_path)
     return {
         "total_count": len(df),
-        "brands_count": len(df['brand'].unique())
+        "brands_count": len(df["brand"].unique()),
     }
+
 
 # 사이드바 공통 영역
 def show_sidebar():
@@ -53,6 +43,7 @@ def show_sidebar():
 
     st.sidebar.markdown("---")
     st.sidebar.caption("© 2026 Convenience Store Dashboard")
+
 
 # 페이지 정의
 home_page = st.Page("pages/00_home.py", title="🏠 메인보드", default=True)
@@ -68,16 +59,29 @@ jackpot_game_page = st.Page("pages/09_jackpot_game.py", title="🎰 잭팟 게�
 event_news_page = st.Page("pages/10_event_news.py", title="🎉 행사 및 이벤트 소식")
 
 # 내비게이션 구성
-pg = st.navigation({
-    "대시보드": [home_page],
-    "상세 서비스": [summary_page, comparison_page, best_value_page, budget_page, diet_guide_page, night_snack_page, random_picker_page, map_page, jackpot_game_page, event_news_page]
-})
+pg = st.navigation(
+    {
+        "대시보드": [home_page],
+        "상세 서비스": [
+            summary_page,
+            comparison_page,
+            best_value_page,
+            budget_page,
+            diet_guide_page,
+            night_snack_page,
+            random_picker_page,
+            map_page,
+            jackpot_game_page,
+            event_news_page,
+        ],
+    }
+)
 
 # 사이드바 실행
 show_sidebar()
 
-# 챗봇 실행
+# 챗봇은 반드시 pg.run() 전에 렌더 (뒤에 두면 FAB가 안 뜸)
 show_chatbot()
 
-# 페이지 실행
+# 페이지 실행 — 장바구니 FAB는 각 페이지에서 render_floating_cart()
 pg.run()

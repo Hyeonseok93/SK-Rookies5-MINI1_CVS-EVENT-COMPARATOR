@@ -14,19 +14,26 @@ env/
 
 # 보안 및 환경 변수
 .env
+.env.local
 .env.secret
+# .env.example 은 커밋 가능 (키 자리만, 실키 없음)
 
-# 데이터 파일 (대용량 및 충돌 방지)
-# data/*.csv
-# data/*.xlsx
-# *.sqlite3
+# 데이터 파일 (브랜드 raw는 재수집 가능 — 대용량/충돌 방지)
+data/CU_*.csv
+data/GS25_*.csv
+data/7Eleven_*.csv
+data/emart24_*.csv
+# cleaned/categorized/stores/news CSV는 데모용으로 추적 유지
 
 # 시스템 및 임시 파일
 .DS_Store
 Thumbs.db
 *.log
+batch/batch_scheduler_log/
+batch/batch_script_log/
 
 # 개인 문서
 prd.md
+docs/
 
 .devcontainer/

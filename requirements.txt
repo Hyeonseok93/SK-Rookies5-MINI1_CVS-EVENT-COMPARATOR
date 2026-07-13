@@ -5,15 +5,12 @@ beautifulsoup4
 loguru
 plotly
 streamlit>=1.35.0
-nbformat
 folium
 streamlit-folium
 pyproj
-ipykernel
 apscheduler
 pytz
 groq
 python-dotenv
-streamlit-float
 selenium
 webdriver-manager
