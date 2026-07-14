@@ -168,21 +168,25 @@
 
 ---
 
-## 🌟 프로젝트 핵심 차별화 포인트 (Portfolio Highlights)
+## 🌟 주요 구현
 
-1. **자동화된 데이터 파이프라인 (Data Pipeline & Batch Scheduler)**
-   - 브랜드별 웹 구조에 맞춘 Requests + BeautifulSoup 크롤러로 4사 행사 상품 수집.
-   - Selenium으로 공식 행사 뉴스(동적 페이지) 수집.
-   - `APScheduler`로 매일 06:00(KST) 배치 갱신·클렌징.
-2. **AI RAG 기반 편의점 추천 챗봇 (Groq Llama-3 Chatbot)**
-   - 사용자의 입력 키워드를 기반으로 상품 데이터베이스(CSV)를 필터링하여 컨텍스트(Context)로 전달하는 실시간 룰 기반 챗봇 서비스 설계.
-   - 자연스러운 한국어로 상품 정보 및 페어링 팁을 알려주는 대화형 에이전트 구현.
-3. **스마트 예산 조합 알고리즘 (Greedy & Dynamic Combination)**
-   - 사용자가 입력한 예산에 맞추어 영양과 만족도를 고려한 최적의 1+1, 2+1 행사 상품 조합을 계산해 제안하는 기능 제공.
-4. **위치 기반 편의점 지도 서비스 (Geospatial Visualization)**
-   - `Folium`과 `streamlit-folium`을 연동하여 편의점 브랜드별 마커 클러스터링 지도 시각화.
-5. **인터랙티브 UX & 다크모드/글래스모피즘 테마**
-   - CSS 기반의 미려한 카드 UI 스타일링, 흐르는 배너 및 럭키박스, 잭팟 슬롯머신 등 사용자 참여를 유도하는 게이미피케이션 적용.
+1. **브랜드별 맞춤 크롤러 (CU / GS25 / 7-Eleven / emart24)**  
+   사이트 구조가 달라서 스크래퍼를 4개로 분리했습니다. 공통 스키마(`brand`, `name`, `price`, `event`, `img_url`)로 CSV에 저장합니다.
+   - **CU**: `plusAjax.do`에 **POST**로 `pageIndex`를 넘겨 HTML 조각을 받습니다. BeautifulSoup으로 `li.prod_list`를 파싱하고, 페이지를 늘리다가 상품이 없으면 중단합니다.
+   - **GS25**: 행사 페이지에서 **CSRFToken**을 먼저 확보한 뒤, `event-goods-search` API를 **JSON**으로 호출합니다. `eventTypeSp` 코드(`ONE_TO_ONE` / `TWO_TO_ONE` 등)를 1+1·2+1 라벨로 매핑합니다.
+   - **7-Eleven**: `listMoreAjax.asp`에 **POST**로 요청합니다. `pTab`으로 1+1 / 2+1을 나누고, `intPageSize`를 크게 잡아 행사별 목록을 한 번에 받아 파싱합니다.
+   - **emart24**: `/goods/event`에 **GET**으로 `category_seq`(1+1 / 2+1 / 3+1)와 `page`를 넘깁니다. `itemWrap` 카드를 파싱하며, 요청 사이에 짧은 랜덤 딜레이를 둡니다.
+
+2. **자동 데이터 파이프라인 (Batch)**  
+   Streamlit과 분리된 배치로 돌립니다. `python -m batch.run_scheduler`는 매일 **06:00 KST**에 실행하고, `python -m batch.run_once`로 즉시 1회 실행도 가능합니다.
+   - 순서: **4사 크롤 → 정제(`data_cleaner_batch`) → 카테고리 분류(`data_categorize`) → 공식 행사 뉴스(Selenium, 실패해도 상품 배치는 유지)**
+   - 브랜드 CSV가 하나라도 비면 정제·분류를 건너뛰어, 깨진 데이터로 카탈로그가 덮이지 않게 했습니다.
+   - 로그는 `batch/batch_script_log/`에 남깁니다.
+
+3. **AI 챗봇 · 간이 RAG (Groq Llama 3.3)**  
+   플로팅 챗봇이 `categorized_data.csv`를 읽고, 사용자 문장의 키워드로 상품명·카테고리를 **리터럴 매칭**해 관련 상품만 골라 컨텍스트로 넣습니다.
+   - 상위 최대 **20개**를 `<product_data>` 블록으로 시스템 프롬프트에 넣고, Groq **`llama-3.3-70b-versatile`**에 스트리밍 요청합니다.
+   - 매칭이 없으면 표본을 샘플링해 넣고, 데이터에 없는 가격·행사를 지어내지 않도록 프롬프트를 제한했습니다.
 
 ---
 
