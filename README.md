@@ -12,7 +12,7 @@
 
 ---
 
-## 🛠 기술 스택
+## 🛠 Built With
 
 <p align="center">
   <picture>
@@ -100,7 +100,7 @@
 
 ---
 
-## 🖥️ 서비스 미리보기
+## 🖥️ Preview
 
 <div align="center">
   <img src="assets/readme/main.png" alt="CVS Event Comparator 홈 화면" width="900" />
@@ -168,144 +168,44 @@
 
 ---
 
-## 🌟 주요 구현
+## 🌟 Key Implementation
 
 1. **브랜드별 맞춤 크롤러 (CU / GS25 / 7-Eleven / emart24)**  
-   네 사이트 UI·API 형태가 달라서 스크래퍼를 브랜드별로 분리했습니다. 결과는 공통 스키마(`brand`, `name`, `price`, `event`, `img_url`)로 CSV에 맞춥니다.
-   - **CU**: 페이지를 넘기며 HTML 조각을 POST로 받고 BeautifulSoup으로 상품 카드를 파싱합니다. 빈 페이지가 나오면 중단합니다.
-   - **GS25**: 행사 페이지에서 CSRF 토큰을 받은 뒤 JSON 검색 API를 호출합니다. 응답의 행사 코드를 1+1·2+1 같은 표시용 라벨로 맞춥니다.
-   - **7-Eleven**: Ajax POST로 행사 탭(1+1 / 2+1)별 목록을 받습니다. 페이지 크기를 크게 잡아 행사 단위로 한 번에 파싱합니다.
-   - **emart24**: 행사 유형(1+1 / 2+1 / 3+1)과 페이지를 쿼리로 넘기는 GET 목록을 파싱합니다. 요청 사이에는 짧은 랜덤 딜레이를 둡니다.
+   사이트마다 HTML·API·인증 방식이 달라서 스크래퍼를 4개로 분리했습니다. 수집 결과는 공통 스키마(`brand`, `name`, `price`, `event`, `img_url`)로 CSV에 맞춥니다.
+   - **CU**: 행사 목록을 **Ajax HTML 조각**으로 **POST** 받아옵니다. 응답이 페이지 단위로 잘려 있어 **page index**를 1부터 올리며 순회하고, 각 조각에서 BeautifulSoup으로 상품명·가격·행사 뱃지·이미지 URL을 파싱해 누적합니다. 상품이 없는 빈 페이지가 나오면 중단하며, 요청 간격과 페이지 상한으로 과도한 호출을 막습니다. 저장 전 `name`/`price`/`event` 기준 중복도 정리합니다.
+   - **GS25**: 화면 HTML을 긁기보다 **JSON 검색 API**로 목록을 받습니다. 먼저 행사 상품 페이지 HTML에서 **CSRF 토큰**을 추출하고, 같은 세션으로 토큰을 붙여 **pageNum / pageSize** 페이지네이션 호출을 반복합니다. 응답의 행사 코드(`ONE_TO_ONE`, `TWO_TO_ONE`, `GIFT` 등)를 1+1·2+1·덤증정 같은 표시용 라벨로 매핑한 뒤 공통 스키마로 적재합니다.
+   - **7-Eleven**: 행사 종류가 **탭 파라미터**(1+1 / 2+1)로 갈라져 있습니다. 탭마다 Ajax **POST**를 보내고, **page size를 크게** 잡아 해당 행사 목록을 한 번에 받은 뒤 HTML에서 상품 카드·행사 태그를 파싱합니다. 탭 라벨이 비어 있으면 요청 시점의 행사 유형을 fallback으로 씁니다.
+   - **emart24**: 행사 종류(1+1 / 2+1 / 3+1)를 **카테고리 파라미터**로 고른 뒤, 카테고리마다 **page 기반 GET 페이지네이션**으로 목록 HTML을 받습니다. 페이지의 상품 카드에서 이름·가격·행사·이미지를 파싱하고, 요청 사이에는 짧은 **랜덤 딜레이**를 둡니다. 빈 페이지가 나오면 그 카테고리 수집을 끝내고 다음 행사 유형으로 넘어갑니다.
 
 2. **자동 데이터 파이프라인 (Batch)**  
-   브랜드별로 모은 원본을 하나로 합치고, 정제·카테고리 분류까지 이은 뒤 대시보드가 읽는 카탈로그로 갱신합니다. UI(Streamlit)와는 별도 프로세스로 돌립니다.
-   - **스케줄**: 매일 **06:00 KST** 자동 실행 (`python -m batch.run_scheduler`). 즉시 1회는 `python -m batch.run_once`.
-   - **흐름**: 4사 크롤 → 원본 병합·정제 → 카테고리 분류 → 공식 행사 뉴스 수집(Selenium). 뉴스만 실패해도 상품 카탈로그 갱신은 유지합니다.
-   - **안전장치**: 브랜드 raw가 하나라도 비면 정제·분류를 건너뛰어, 깨진 데이터로 카탈로그가 덮이지 않게 했습니다. 실행 로그는 `batch/batch_script_log/`에 남깁니다.
+   브랜드별로 모은 원본을 하나로 합치고, 정제·카테고리 분류까지 이은 뒤 대시보드가 읽는 상품 카탈로그로 갱신합니다. Streamlit UI와는 **별도 프로세스**로 돌립니다.
+   - **스케줄**: 매일 **06:00 KST** 자동 실행 (`python -m batch.run_scheduler`). 점검·수동 반영용 즉시 1회는 `python -m batch.run_once` (`--dry-run`으로 크롤 없이 점검 가능).
+   - **흐름**: **4사 크롤 → 원본 병합·정제 → 카테고리 분류 → 공식 행사 뉴스 수집(Selenium)**. 뉴스는 4사 이벤트/소식 게시판을 열고, 이 단계만 실패해도 상품 카탈로그 갱신은 유지합니다.
+   - **안전장치**: 브랜드 raw CSV가 하나라도 비거나 크롤이 실패하면 정제·분류를 건너뛰어, 깨진 데이터로 기존 카탈로그가 덮이지 않게 했습니다. 실행 로그는 `batch/batch_script_log/`에 남깁니다.
 
 3. **AI 챗봇 · 간이 RAG (Groq Llama 3.3)**  
-   플로팅 챗봇이 분류된 상품 카탈로그를 읽고, 사용자 문장의 키워드로 상품명·카테고리를 맞춰 관련 행만 골라 컨텍스트로 넣습니다.
-   - 상위 최대 **20개**를 시스템 프롬프트에 붙인 뒤 Groq **Llama 3.3 70B**에 스트리밍 요청합니다.
-   - 매칭이 없으면 카탈로그에서 표본을 샘플링해 넣고, 데이터에 없는 가격·행사는 지어내지 않도록 프롬프트로 제한했습니다.
+   플로팅 챗봇이 분류된 상품 카탈로그를 읽고, 사용자 문장에서 뽑은 키워드로 상품명·카테고리를 **리터럴 매칭**해 관련 행만 골라 컨텍스트로 넣습니다.
+   - 매칭된 상위 최대 **20개**를 시스템 프롬프트에 붙인 뒤, Groq **Llama 3.3 70B**에 **스트리밍** 요청합니다.
+   - 매칭이 없으면 카탈로그에서 표본을 **샘플링**해 넣습니다. 데이터에 없는 가격·행사는 지어내지 않도록 프롬프트로 제한했습니다.
 
 ---
 
-## 🏗️ 시스템 아키텍처 (System Architecture)
-
-```mermaid
-graph TD
-    %% Scraper Layer
-    subgraph scraping["Crawling & Scraping"]
-        CU["CU Scraper"] -->|Raw Data| CU_CSV[("CU Raw CSV")]
-        GS["GS25 Scraper"] -->|Raw Data| GS_CSV[("GS25 Raw CSV")]
-        SE["7-Eleven Scraper"] -->|Raw Data| SE_CSV[("7-Eleven Raw CSV")]
-        EM["emart24 Scraper"] -->|Raw Data| EM_CSV[("emart24 Raw CSV")]
-    end
-
-    %% Batch / Clean Layer
-    subgraph pipeline["Data Pipeline"]
-        Scheduler["APScheduler Manager"] -->|Trigger| Run["crawl_batch_script.py"]
-        Run --> scraping
-        CU_CSV & GS_CSV & SE_CSV & EM_CSV -->|Data Cleansing| Cleaner["data_cleaner.py"]
-        Cleaner -->|Formatted Raw| CleanCSV[("cleaned_data.csv")]
-        CleanCSV -->|Text-based NLP Classification| Categorizer["data_categorize.py"]
-        Categorizer -->|Final Database| FinalCSV[("categorized_data.csv")]
-    end
-
-    %% Application Layer
-    subgraph application["Dashboard Application (Streamlit)"]
-        FinalCSV -->|Load| Main["app.py / st.navigation"]
-
-        %% Features
-        Main --> Home["00_home: 추천 & 실시간 뉴스"]
-        Main --> Summary["01_overall_summary: 전체 요약 & 필터"]
-        Main --> Compare["02_brand_comparison: 브랜드 비교 & Plotly 시각화"]
-        Main --> BestVal["03_best_value: 가성비 TOP 50"]
-        Main --> Budget["04_budget_combination: 예산 맞춤 조합 생성"]
-        Main --> Diet["05_diet_guide: 식단 & 다이어트 가이드"]
-        Main --> Night["06_night_snack_guide: 야식 & 안주 가이드"]
-        Main --> Map["07_convenience_store_map: 편의점 지도"]
-        Main --> Game["08_random_picker & 09_jackpot_game"]
-
-        %% Chatbot
-        Main --> Chatbot["utils/chatbot.py: Groq Llama-3 RAG Chat"]
-        FinalCSV -->|Keyword RAG Context| Chatbot
-    end
-
-    %% Styling
-    classDef styleClass fill:#1c2128,stroke:#30363d,stroke-width:2px,color:#fff;
-    class CU,GS,SE,EM,CU_CSV,GS_CSV,SE_CSV,EM_CSV,Scheduler,Run,Cleaner,CleanCSV,Categorizer,FinalCSV,Main,Home,Summary,Compare,BestVal,Budget,Diet,Night,Map,Game,Chatbot styleClass;
-```
-
----
-
-## 📂 프로젝트 구조 (Project Folder Structure)
+## 📂 Project Structure
 
 ```text
-conv-dashboard/
-┣━━ 📂 .devcontainer/               # 개발 환경 컨테이너화 설정 (DevContainer)
-┃   ┗━━ 📄 devcontainer.json        # 클라우드/컨테이너 개발 환경 명세
-┣━━ 📂 .streamlit/                  # Streamlit 설정 폴더
-┃   ┗━━ 📄 config.toml              # 테마(Dark), 레이아웃 및 포트 설정
-┣━━ 📂 assets/                      # 브랜드 로고 · README 에셋
-┃   ┣━━ 📂 readme/                  # README용 스크린샷 · 뱃지
-┃   ┃   ┣━━ 📂 badges/dark/         # 기술 스택 뱃지 (다크 테마)
-┃   ┃   ┣━━ 📂 badges/light/        # 기술 스택 뱃지 (라이트 테마)
-┃   ┃   ┗━━ 🖼️ main.png             # 서비스 미리보기
-┃   ┣━━ 🖼️ logo_cu.png
-┃   ┣━━ 🖼️ logo_gs25.png
-┃   ┣━━ 🖼️ logo_7eleven.png
-┃   ┗━━ 🖼️ logo_emart24.png
-┣━━ 📂 batch/                       # 데이터 수집 자동화 및 스케줄러 (UI와 분리)
-┃   ┣━━ 📂 script/
-┃   ┃   ┗━━ 📄 crawl_batch_script.py # 통합 크롤링 및 정제 실행 자동화 스크립트
-┃   ┣━━ 📄 batch_scheduler_manager.py # 백그라운드 APScheduler 스케줄러 관리자
-┃   ┣━━ 📄 run_scheduler.py         # 스케줄러 상시 실행 (매일 06:00)
-┃   ┣━━ 📄 run_once.py              # 배치 1회 즉시 실행
-┃   ┗━━ 📄 __init__.py
-┣━━ 📂 data/                        # 데이터 저장소 (CSV)
-┃   ┣━━ 📄 CU_260224.csv            # 브랜드별 수집 원본 로우 데이터
-┃   ┣━━ 📄 GS25_260224.csv
-┃   ┣━━ 📄 7Eleven_260224.csv
-┃   ┣━━ 📄 emart24_260224.csv
-┃   ┣━━ 📄 cleaned_data.csv         # 중복 제거 및 누락치 처리 완료 데이터
-┃   ┣━━ 📄 categorized_data.csv     # 최종 상품 분류 및 인덱싱이 끝난 메인 데이터
-┃   ┗━━ 📄 filtered_convenience_stores.csv # 위치 기반 편의점 매장 데이터
-┣━━ 📂 pages/                       # 대시보드 핵심 기능 웹 페이지 모듈
-┃   ┣━━ 📄 00_home.py               # 실시간 추천 핫딜, 꿀팁봇, 뉴스 피드 메인보드
-┃   ┣━━ 📄 01_overall_summary.py    # 이미지 카드 레이아웃 기반 통합 검색/필터 페이지
-┃   ┣━━ 📄 02_brand_comparison.py   # 브랜드별 상품 구성, 행사 규모 시각화 비교
-┃   ┣━━ 📄 03_best_value.py         # 실질 할인율/효율 기준 TOP 50 랭킹 정보
-┃   ┣━━ 📄 04_budget_combination.py # 예산 조건 충족 최적 번들 조합 구성기
-┃   ┣━━ 📄 05_diet_guide.py         # 닭가슴살, 제로 탄산 등 다이어터 특화 상품 정보
-┃   ┣━━ 📄 06_night_snack_guide.py  # 혼술 안주, 새벽 야식 매칭 추천 서비스
-┃   ┣━━ 📄 07_convenience_store_map.py # 전국 편의점 위치 시각화 (Folium 지리 공간 지도)
-┃   ┣━━ 📄 08_random_picker.py      # 결정 장애 해결용 럭키박스 뽑기
-┃   ┣━━ 📄 09_jackpot_game.py       # 재미 요소를 결합한 상품 매칭 슬롯머신
-┃   ┗━━ 📄 10_event_news.py         # 편의점 업계 최신 마케팅 및 이벤트 동향 소식
-┣━━ 📂 scraper/                     # 편의점 4사 전용 크롤링 라이브러리
-┃   ┣━━ 📄 cu_scraper.py            # CU (Requests + BeautifulSoup)
-┃   ┣━━ 📄 gs25_scraper.py          # GS25 (Requests + BeautifulSoup)
-┃   ┣━━ 📄 seven_eleven_scraper.py  # 7-Eleven (Requests + BeautifulSoup)
-┃   ┣━━ 📄 emart24_scraper.py       # emart24 (Requests + BeautifulSoup)
-┃   ┗━━ 📄 event_news_scraper.py    # 공식 행사 뉴스 (Selenium)
-┃   ┣━━ 📄 event_news_scraper.py    # 브랜드별 보도자료/뉴스 연동용 스크래퍼
-┃   ┗━━ 📄 __init__.py
-┣━━ 📂 test/                        # 스케줄러 기능 검증 및 개별 스크립트 테스트 폴더
-┣━━ 📂 utils/                       # 공통 유틸리티 및 AI/시각화 모듈
-┃   ┣━━ 📄 data_cleaner.py          # 수집 데이터 텍스트 정제 및 중복 제어 (공유 코어)
-┃   ┣━━ 📄 data_cleaner_batch.py    # 파일명 연월 접두사로 raw 선택 후 공유 코어로 정제
-┃   ┣━━ 📄 data_categorize.py       # 상품명 키워드 패턴 매칭 기반 카테고리 분류 엔진
-┃   ┣━━ 📄 data_loader.py           # 카탈로그 CSV 캐시 로더
-┃   ┣━━ 📄 theme_guide.py           # 다이어트/야식 테마 가이드 공통 UI
-┃   ┣━━ 📄 chatbot.py               # Groq API 활용 LLM Chatbot 로직
-┃   ┣━━ 📄 cart.py                  # 장바구니/장바구니 찜하기 데이터 유지 관리
-┃   ┣━━ 📄 news_scraper.py          # 네이버/다음 뉴스 포털 크롤링 래퍼
-┃   ┗━━ 📄 __init__.py
-┣━━ 📄 app.py                       # 메인 컨트롤러 및 사이드바 내비게이션 진입점
-┣━━ 📄 style.css                    # 다크 모드 맞춤 커스텀 CSS (Glassmorphism 적용)
-┣━━ 📄 requirements.txt             # 개발 패키지 명세서
-┗━━ 📄 .gitignore                   # Git 제외 파일 관리 가이드
+SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
+├── app.py                 # Streamlit 진입점 · 내비게이션
+├── style.css              # 전역 UI 스타일
+├── requirements.txt
+├── .env.example           # GROQ_API_KEY 예시
+├── pages/                 # 대시보드 페이지 (홈 · 비교 · 가이드 · 지도 · 게임 등)
+├── scraper/               # 4사 상품 크롤러 + 공식 행사 뉴스(Selenium)
+├── batch/                 # 일간 배치 · 스케줄러 (UI와 분리, 06:00 KST)
+├── utils/                 # 정제·분류·로더·가격·챗봇·공통 UI
+├── data/                  # raw / cleaned / categorized CSV
+├── assets/                # 로고 · README 뱃지·미리보기
+├── scripts/               # 스모크 체크 등 보조 스크립트
+└── test/                  # 배치·스케줄러 수동 테스트
 ```
 
 ---
