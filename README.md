@@ -1,5 +1,13 @@
 # 🏪 CVS Event Comparator (편의점 행사 상품 통합 대시보드)
 
+## 💻 Developers
+
+| <a href="https://github.com/Engineer-kim" target="_blank"><img width="120" height="120" src="https://github.com/Engineer-kim.png" /></a> | <a href="https://github.com/Hyeonseok93" target="_blank"><img width="120" height="120" src="https://github.com/Hyeonseok93.png" /></a> | <a href="https://github.com/hongjiho5148" target="_blank"><img width="120" height="120" src="https://github.com/hongjiho5148.png" /></a> | <a href="https://github.com/owhat02" target="_blank"><img width="120" height="120" src="https://github.com/owhat02.png" /></a> | <a href="https://github.com/seoyeon020" target="_blank"><img width="120" height="120" src="https://github.com/seoyeon020.png" /></a> | <a href="https://github.com/siyeon04" target="_blank"><img width="120" height="120" src="https://github.com/siyeon04.png" /></a> |
+|:-------------:|:------:|:------:|:------:|:------:|:------:|
+| [김한진(팀장)](https://github.com/Engineer-kim) | [김현석](https://github.com/Hyeonseok93) | [홍지호](https://github.com/hongjiho5148) | [이새연](https://github.com/owhat02) | [임서연](https://github.com/seoyeon020) | [이시연](https://github.com/siyeon04) |
+
+---
+
 > [!NOTE]
 > **SK쉴더스 루키즈 5기**에서 Python · Streamlit · 바이브 코딩 교육을 진행한 뒤 이어진 **첫 번째 미니 프로젝트**입니다.
 
@@ -275,12 +283,4 @@ python -m batch.run_scheduler
 python -m batch.run_once
 # python -m batch.run_once --dry-run
 ```
-
----
-
-## 💻 Developers
-
-| <a href="https://github.com/Engineer-kim" target="_blank"><img width="120" height="120" src="https://github.com/Engineer-kim.png" /></a> | <a href="https://github.com/Hyeonseok93" target="_blank"><img width="120" height="120" src="https://github.com/Hyeonseok93.png" /></a> | <a href="https://github.com/hongjiho5148" target="_blank"><img width="120" height="120" src="https://github.com/hongjiho5148.png" /></a> | <a href="https://github.com/owhat02" target="_blank"><img width="120" height="120" src="https://github.com/owhat02.png" /></a> | <a href="https://github.com/seoyeon020" target="_blank"><img width="120" height="120" src="https://github.com/seoyeon020.png" /></a> | <a href="https://github.com/siyeon04" target="_blank"><img width="120" height="120" src="https://github.com/siyeon04.png" /></a> |
-|:-------------:|:------:|:------:|:------:|:------:|:------:|
-| [김한진(팀장)](https://github.com/Engineer-kim) | [김현석](https://github.com/Hyeonseok93) | [홍지호](https://github.com/hongjiho5148) | [이새연](https://github.com/owhat02) | [임서연](https://github.com/seoyeon020) | [이시연](https://github.com/siyeon04) |
 
