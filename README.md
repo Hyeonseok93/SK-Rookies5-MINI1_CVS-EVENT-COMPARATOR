@@ -194,18 +194,24 @@
 
 ```text
 SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
-├── app.py                 # Streamlit 진입점 · 내비게이션
-├── style.css              # 전역 UI 스타일
-├── requirements.txt
-├── .env.example           # GROQ_API_KEY 예시
-├── pages/                 # 대시보드 페이지 (홈 · 비교 · 가이드 · 지도 · 게임 등)
-├── scraper/               # 4사 상품 크롤러 + 공식 행사 뉴스(Selenium)
-├── batch/                 # 일간 배치 · 스케줄러 (UI와 분리, 06:00 KST)
-├── utils/                 # 정제·분류·로더·가격·챗봇·공통 UI
-├── data/                  # raw / cleaned / categorized CSV
-├── assets/                # 로고 · README 뱃지·미리보기
-├── scripts/               # 스모크 체크 등 보조 스크립트
-└── test/                  # 배치·스케줄러 수동 테스트
+┣━━ 📂 assets/                        # 브랜드 로고 · README 에셋
+┃   ┣━━ 📂 readme/badges/dark|light/  # 테마별 스택 뱃지
+┃   ┗━━ 🖼️ main.png                   # 서비스 미리보기
+┣━━ 📂 pages/                         # Streamlit 멀티 페이지
+┣━━ 📂 scraper/                       # 4사 상품 크롤러 + 행사 뉴스(Selenium)
+┃   ┗━━ 📄 base.py                    # 공통 저장 · 스키마 헬퍼
+┣━━ 📂 batch/                         # 일간 배치 (UI와 분리)
+┃   ┣━━ 📂 script/                    # 크롤 → 정제 → 분류 → 뉴스
+┃   ┣━━ 📄 run_scheduler.py           # 매일 06:00 KST 상시 기동
+┃   ┗━━ 📄 run_once.py                # 1회 즉시 실행 / dry-run
+┣━━ 📂 utils/                         # 정제·분류·로더·챗봇·공통 UI
+┣━━ 📂 data/                          # raw / cleaned / categorized CSV
+┣━━ 📂 scripts/                       # 스모크 체크 등 보조 스크립트
+┣━━ 📂 test/                          # 배치 · 스케줄러 수동 테스트
+┣━━ 📄 app.py                         # Streamlit 진입점 · 내비게이션
+┣━━ 📄 style.css                      # 전역 UI 스타일
+┣━━ 📄 requirements.txt
+┗━━ 📄 .env.example                   # GROQ_API_KEY 예시
 ```
 
 ---
