@@ -206,7 +206,6 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 ┃   ┗━━ 📄 run_once.py                # 1회 즉시 실행 / dry-run
 ┣━━ 📂 utils/                         # 정제·분류·로더·챗봇·공통 UI
 ┣━━ 📂 data/                          # raw / cleaned / categorized CSV
-┣━━ 📂 scripts/                       # 스모크 체크 등 보조 스크립트
 ┣━━ 📂 test/                          # 배치 · 스케줄러 수동 테스트
 ┣━━ 📄 app.py                         # Streamlit 진입점 · 내비게이션
 ┣━━ 📄 style.css                      # 전역 UI 스타일
