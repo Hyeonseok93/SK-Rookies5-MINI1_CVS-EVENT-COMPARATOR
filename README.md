@@ -216,16 +216,16 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ---
 
-## ⚙️ Getting Started
+## ⚙️ 설치 및 실행
 
-### 1. Clone
+### 1. 레포지토리 클론
 
 ```bash
 git clone https://github.com/Hyeonseok93/SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR.git
 cd SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR
 ```
 
-### 2. Virtualenv & install
+### 2. 가상환경 및 패키지 설치
 
 ```bash
 python -m venv venv
@@ -246,7 +246,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Environment (optional)
+### 3. 환경 변수 (선택)
 
 챗봇을 쓸 때만 루트에 `.env`를 둡니다. (없으면 UI만 동작)
 
@@ -254,7 +254,7 @@ pip install -r requirements.txt
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-### 4. Run the dashboard
+### 4. 대시보드 실행
 
 ```bash
 streamlit run app.py
@@ -262,7 +262,7 @@ streamlit run app.py
 
 배치 스케줄러는 Streamlit과 **별도 프로세스**입니다. UI만 보면 위 명령이면 충분합니다.
 
-### 5. Batch (optional)
+### 5. 배치 (선택)
 
 매일 **06:00 KST**로 카탈로그를 갱신하려면:
 
