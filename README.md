@@ -210,22 +210,20 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ---
 
-## ⚙️ 설치 및 로컬 실행 방법
+## ⚙️ Getting Started
 
-### 1. 레포지토리 클론 및 폴더 이동
+### 1. Clone
 
 ```bash
 git clone https://github.com/Hyeonseok93/SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR.git
 cd SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR
 ```
 
-### 2. 가상환경 구축 및 패키지 설치
+### 2. Virtualenv & install
 
 ```bash
 python -m venv venv
 ```
-
-가상환경 활성화:
 
 ```bat
 :: Windows CMD
@@ -233,130 +231,53 @@ venv\Scripts\activate.bat
 
 :: Windows PowerShell
 venv\Scripts\Activate.ps1
-
-:: Mac/Linux
-source venv/bin/activate
 ```
 
 ```bash
+# macOS / Linux
+source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-### 3. 환경 변수 설정
+### 3. Environment (optional)
 
-프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 Groq API 키를 설정합니다. (챗봇 기능을 사용하지 않으려면 생략 가능)
+챗봇을 쓸 때만 루트에 `.env`를 둡니다. (없으면 UI만 동작)
 
 ```env
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-### 4. 대시보드 애플리케이션 실행
-
-Windows CMD 예시:
-
-```bat
-venv\Scripts\activate.bat
-streamlit run app.py
-```
-
-Mac/Linux / 이미 가상환경이 켜진 경우:
+### 4. Run the dashboard
 
 ```bash
 streamlit run app.py
 ```
 
-> 스케줄러는 Streamlit과 **분리**되어 있습니다. UI만 띄울 때는 위 명령만 사용하세요.
+배치 스케줄러는 Streamlit과 **별도 프로세스**입니다. UI만 보면 위 명령이면 충분합니다.
 
-### 5. 일간 배치 스케줄러 (선택)
+### 5. Batch (optional)
 
-대시보드와 **별도 프로세스**로 스케줄러를 띄웁니다 (매일 06:00 KST).
+매일 **06:00 KST**로 카탈로그를 갱신하려면:
 
 ```bash
 python -m batch.run_scheduler
 ```
 
-즉시 한 번만 돌리려면:
+지금 한 번만 돌리려면:
 
 ```bash
 python -m batch.run_once
-# 점검만: python -m batch.run_once --dry-run
-# 파일 스탬프 연·월 지정: python -m batch.run_once --year 2026 --month 7
+# python -m batch.run_once --dry-run
 ```
 
-### 6. 수동 데이터 크롤링 및 업데이트 (선택 사항)
-
-데이터를 즉시 업데이트하고 싶다면 아래 명령어를 순서대로 실행합니다:
-
-```bash
-# 편의점 4사 데이터 스크래핑 실행
-python scraper/cu_scraper.py
-python scraper/gs25_scraper.py
-python scraper/seven_eleven_scraper.py
-python scraper/emart24_scraper.py
-
-# 데이터 정제 및 카테고리 자동 분류 적용
-python utils/data_cleaner.py
-python utils/data_categorize.py
-```
+흐름·안전장치는 위 **Key Implementation**을 보면 됩니다.
 
 ---
 
-## 🎨 주요 화면 가이드 (Features Walkthrough)
-
-| 🏠 메인보드 (`00_home.py`)                                                                | 🔍 전체 요약 (`01_overall_summary.py`)                                           |
-| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| 맞춤형 핫딜 배너 스크롤러, 시간대별 지능형 메뉴 추천, 편의점 업계 최신 보도자료 피드 탑재 | 정교한 다중 선택 필터(브랜드, 행사 유형, 카테고리) 및 텍스트 통합 검색 엔진 제공 |
-
-| 📊 브랜드 비교 (`02_brand_comparison.py`)                                    | 🍱 예산 맞춤 꿀조합 (`04_budget_combination.py`)                      |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Plotly를 이용한 브랜드별 행사 상품 점유율 분석 및 평균 단가 비교 그래프 제공 | 예산 맞춤 알고리즘을 사용해 최대 효율을 내는 최적 번들 상품 조합 추천 |
-
-| 📍 편의점 지도 (`07_convenience_store_map.py`)                                | 💬 AI 꿀팁봇 (`utils/chatbot.py`)                                       |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 마커 클러스터 기능을 활용한 사용자 위치 기반 주변 4대 편의점 위치 매핑 시각화 | Groq Llama-3 기반으로 실시간 맥락 파악 및 상품 매칭, 페어링 가이드 제공 |
-
----
-
----
-
-## 🚀 편의점 최신화 행사 정보 수집 배치
-
-편의점 4사(7-Eleven, CU, GS25, Emart24)의 행사 정보를 자동으로 수집하고 분류하는 배치
-
-### 📅 실행 스케줄
-- **실행 일시**: 매일 06:00 (KST 기준)
-- **주요 목적**: 편의점 행사 정보를 매일 수집·정제하여 대시보드 데이터를 최신화
-
-### 🛠 주요 기능
-1. **데이터 크롤링**: 각 편의점 사이트의 최신 행사 데이터를 수집합니다.
-2. **데이터 정제**: 수집된 원본 데이터(편의점 행사정보 상품 데이터)를 `data_cleaner_batch`를 통해 통합 및 중복 제거합니다.
-3. **자동 분류**: 수집된 상품명을 분석하여 식사류, 간식류, 음료 등의 카테고리로 자동 매핑합니다.
-
-### 📂 디렉토리 구조
-- `batch/`: 배치 스크립트 메인 로직 및 스케줄러 관리 (**Streamlit과 별도 프로세스**)
-  - `script/`: 배치 스크립트 위치
-  - `batch_scheduler_manager.py`: 배치 스케줄러 설정
-  - `run_scheduler.py`: `python -m batch.run_scheduler` 진입점
-- `test/`: 배치 스크립트 테스트 케이스 및 테스트코드
-
-### 🧪 테스트 및 참고 사항
-- 프로젝트 루트에서 test 디렉토리로 이동 아래의 명령어로 실행
-```bash
-cd test
-
-python batch_script_test.py
-```
-
-스케줄러 상시 기동 예:
-```bash
-python -m batch.run_scheduler
-```
----
-
-&nbsp;
-## 💻 개발자 (Developers)
+## 💻 Developers
 
 | <a href="https://github.com/Engineer-kim" target="_blank"><img width="120" height="120" src="https://github.com/Engineer-kim.png" /></a> | <a href="https://github.com/Hyeonseok93" target="_blank"><img width="120" height="120" src="https://github.com/Hyeonseok93.png" /></a> | <a href="https://github.com/hongjiho5148" target="_blank"><img width="120" height="120" src="https://github.com/hongjiho5148.png" /></a> | <a href="https://github.com/owhat02" target="_blank"><img width="120" height="120" src="https://github.com/owhat02.png" /></a> | <a href="https://github.com/seoyeon020" target="_blank"><img width="120" height="120" src="https://github.com/seoyeon020.png" /></a> | <a href="https://github.com/siyeon04" target="_blank"><img width="120" height="120" src="https://github.com/siyeon04.png" /></a> |
 |:-------------:|:------:|:------:|:------:|:------:|:------:|
-| [김한진(팀장)]([https://github.com/Engineer-kim) | [김현석](https://github.com/Hyeonseok93) | [홍지호](https://github.com/hongjiho5148) | [이새연](https://github.com/owhat02) | [임서연](https://github.com/seoyeon020) | [이시연](https://github.com/siyeon04) |
+| [김한진(팀장)](https://github.com/Engineer-kim) | [김현석](https://github.com/Hyeonseok93) | [홍지호](https://github.com/hongjiho5148) | [이새연](https://github.com/owhat02) | [임서연](https://github.com/seoyeon020) | [이시연](https://github.com/siyeon04) |
 
