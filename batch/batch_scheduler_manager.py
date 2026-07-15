@@ -21,41 +21,42 @@ def get_kst_now():
     return datetime.now(kst).replace(tzinfo=None)
 
 
-def _resolve_target_year_month(year: int | None = None, month: int | None = None):
-    """Compute target year/month at call time (not at job registration)."""
+def _resolve_file_stamp_year_month(year: int | None = None, month: int | None = None):
+    """연/월은 cron 주기가 아니라 raw CSV 파일명 접두사(YYMM)용. 기본은 실행 시점 KST."""
     now = get_kst_now()
     return (year if year is not None else now.year), (month if month is not None else now.month)
 
 
-def run_monthly_batch_task(
+def run_daily_batch_task(
     year: int = None,
     month: int = None,
     batch_name: str = None,
     max_retry: int = 3,
     dry_run: bool = False,
-    use_current_month: bool = False,
+    use_run_date: bool = False,
 ):
     """
-    지정된 연/월의 배치를 실행합니다.
+    일간 데이터 최신화 배치를 실행합니다.
 
-    use_current_month=True 이면 실행 시점의 연/월을 사용합니다 (월간 cron용).
+    use_run_date=True 이면 실행 시점의 연/월을 파일 스탬프(YYMM)로 사용합니다 (매일 cron용).
+    year/month를 고정 넘기면 그 접두사로 파일을 맞춥니다.
     """
-    if use_current_month or year is None or month is None:
-        year, month = _resolve_target_year_month(year, month)
+    if use_run_date or year is None or month is None:
+        year, month = _resolve_file_stamp_year_month(year, month)
 
-    batch_name = batch_name or f"{year}년 {month}월"
+    batch_name = batch_name or f"일간 배치 ({year}-{month:02d})"
     run_time = get_kst_now().replace(day=1, hour=0, minute=30, second=0, microsecond=0)
     now = get_kst_now()
     run_time = run_time.replace(year=year, month=month, hour=now.hour, minute=now.minute, second=now.second)
-    logger.info(f"🚀 [{batch_name}] 스케줄러에 의해 배치 루틴 호출됨 (target={year}-{month:02d})")
+    logger.info(f"🚀 [{batch_name}] 스케줄러에 의해 배치 루틴 호출됨 (file_stamp={year}-{month:02d})")
 
     attempt = 0
     success = False
     while attempt <= max_retry and not success:
         try:
-            from batch.script.crawl_batch_script import get_next_month_data_batch
+            from batch.script.crawl_batch_script import run_daily_data_batch
 
-            ok = get_next_month_data_batch(year=year, month=month, dry_run=dry_run, run_time=run_time)
+            ok = run_daily_data_batch(year=year, month=month, dry_run=dry_run, run_time=run_time)
             if not ok:
                 raise RuntimeError("배치 후처리 조건 미충족 (크롤 실패 또는 데이터 부족)")
             logger.success(f"✅ [{batch_name}] 배치 완료 - {get_kst_now().strftime('%H:%M:%S')}")
@@ -108,20 +109,20 @@ class SchedulerManager:
         """새로운 배치 작업을 등록 (이미 존재하면 건너뜀).
 
         day가 None이면 매일 실행합니다.
-        year/month가 None이면 매 실행 시점의 현재 연/월을 사용합니다.
+        year/month가 None이면 매 실행 시점의 현재 연/월을 파일 스탬프(YYMM)로 사용합니다.
         """
         now = get_kst_now()
-        fixed_target = year is not None and month is not None
-        use_current_month = not fixed_target
+        fixed_stamp = year is not None and month is not None
+        use_run_date = not fixed_stamp
         daily = day is None
         label = batch_name or (
-            "정기 데이터 최신화 배치" if use_current_month else f"{year}년 {month}월"
+            "정기 일간 데이터 최신화 배치" if use_run_date else f"파일스탬프 {year}-{month:02d}"
         )
         job_id = job_id or (
             f"batch_daily_{hour:02d}{minute:02d}"
-            if daily and use_current_month
-            else f"batch_monthly_{day}_{hour:02d}{minute:02d}"
-            if use_current_month
+            if daily and use_run_date
+            else f"batch_dom_{day}_{hour:02d}{minute:02d}"
+            if use_run_date
             else f"batch_{year}_{month}_{day}_{hour}_{minute}"
         )
 
@@ -145,16 +146,16 @@ class SchedulerManager:
             "month": month,
             "batch_name": label,
             "dry_run": dry_run,
-            "use_current_month": use_current_month,
+            "use_run_date": use_run_date,
             "daily": daily,
         }
 
         kwargs = {
             "batch_name": label,
             "dry_run": dry_run,
-            "use_current_month": use_current_month,
+            "use_run_date": use_run_date,
         }
-        if fixed_target:
+        if fixed_stamp:
             kwargs["year"] = year
             kwargs["month"] = month
 
@@ -163,7 +164,7 @@ class SchedulerManager:
             cron_kwargs["day"] = day
 
         self.scheduler.add_job(
-            run_monthly_batch_task,
+            run_daily_batch_task,
             "cron",
             id=job_id,
             replace_existing=True,
@@ -173,9 +174,9 @@ class SchedulerManager:
 
         if not already_logged:
             logger.info(f"✅ 배치 등록 완료: {job_id}")
-            target_desc = "실행 시점 현재 연/월" if use_current_month else f"{year}-{month:02d}"
+            stamp_desc = "실행 시점 연/월 (파일 스탬프)" if use_run_date else f"고정 스탬프 {year}-{month:02d}"
             when = f"매일 {hour:02d}:{minute:02d}" if daily else f"매월 {day}일 {hour:02d}:{minute:02d}"
-            logger.info(f"   {when} - [{label}] target={target_desc} (dry_run={dry_run})")
+            logger.info(f"   {when} - [{label}] stamp={stamp_desc} (dry_run={dry_run})")
 
     def remove_job(self, job_id: str):
         if self.scheduler.get_job(job_id):

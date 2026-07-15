@@ -13,13 +13,23 @@ from datetime import datetime
 
 import pytz
 
-from batch.script.crawl_batch_script import get_next_month_data_batch
+from batch.script.crawl_batch_script import run_daily_data_batch
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="편의점 행사 데이터 배치 1회 실행")
-    parser.add_argument("--year", type=int, default=None, help="대상 연도 (기본: 오늘 KST)")
-    parser.add_argument("--month", type=int, default=None, help="대상 월 (기본: 오늘 KST)")
+    parser = argparse.ArgumentParser(description="편의점 행사 데이터 일간 배치 1회 실행")
+    parser.add_argument(
+        "--year",
+        type=int,
+        default=None,
+        help="파일명 스탬프용 연도 (기본: 오늘 KST)",
+    )
+    parser.add_argument(
+        "--month",
+        type=int,
+        default=None,
+        help="파일명 스탬프용 월 (기본: 오늘 KST)",
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -32,8 +42,8 @@ def main() -> int:
     year = args.year if args.year is not None else now.year
     month = args.month if args.month is not None else now.month
 
-    print(f"Running batch once: {year}-{month:02d} (dry_run={args.dry_run})")
-    ok = get_next_month_data_batch(
+    print(f"Running daily batch once: stamp={year}-{month:02d} (dry_run={args.dry_run})")
+    ok = run_daily_data_batch(
         year=year,
         month=month,
         run_time=now,

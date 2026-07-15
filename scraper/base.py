@@ -24,7 +24,7 @@ def save_products(
 
     Filename stamp priority:
       1) file_stamp arg
-      2) BATCH_FILE_STAMP env (set by batch runner for target YYMM)
+      2) BATCH_FILE_STAMP env (set by daily batch runner, usually YYMMDD)
       3) start_ts.strftime("%y%m%d")
       4) wall-clock now
 

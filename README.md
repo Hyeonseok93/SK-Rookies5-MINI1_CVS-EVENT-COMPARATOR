@@ -178,7 +178,7 @@
    - **emart24**: `/goods/event`에 **GET**으로 `category_seq`(1+1 / 2+1 / 3+1)와 `page`를 넘깁니다. `itemWrap` 카드를 파싱하며, 요청 사이에 짧은 랜덤 딜레이를 둡니다.
 
 2. **자동 데이터 파이프라인 (Batch)**  
-   Streamlit과 분리된 배치로 돌립니다. `python -m batch.run_scheduler`는 매일 **06:00 KST**에 실행하고, `python -m batch.run_once`로 즉시 1회 실행도 가능합니다.
+   네 갈래로 모은 원본을 하나의 카탈로그로 맞추는 정제·분류 단계를 둡니다. Streamlit과 분리된 배치로 돌리며, `python -m batch.run_scheduler`는 매일 **06:00 KST**에 실행하고, `python -m batch.run_once`로 즉시 1회 실행도 가능합니다.
    - 순서: **4사 크롤 → 정제(`data_cleaner_batch`) → 카테고리 분류(`data_categorize`) → 공식 행사 뉴스(Selenium, 실패해도 상품 배치는 유지)**
    - 브랜드 CSV가 하나라도 비면 정제·분류를 건너뛰어, 깨진 데이터로 카탈로그가 덮이지 않게 했습니다.
    - 로그는 `batch/batch_script_log/`에 남깁니다.
@@ -294,7 +294,7 @@ conv-dashboard/
 ┣━━ 📂 test/                        # 스케줄러 기능 검증 및 개별 스크립트 테스트 폴더
 ┣━━ 📂 utils/                       # 공통 유틸리티 및 AI/시각화 모듈
 ┃   ┣━━ 📄 data_cleaner.py          # 수집 데이터 텍스트 정제 및 중복 제어 (공유 코어)
-┃   ┣━━ 📄 data_cleaner_batch.py    # YYMM 파일 선택 후 공유 코어로 정제
+┃   ┣━━ 📄 data_cleaner_batch.py    # 파일명 연월 접두사로 raw 선택 후 공유 코어로 정제
 ┃   ┣━━ 📄 data_categorize.py       # 상품명 키워드 패턴 매칭 기반 카테고리 분류 엔진
 ┃   ┣━━ 📄 data_loader.py           # 카탈로그 CSV 캐시 로더
 ┃   ┣━━ 📄 theme_guide.py           # 다이어트/야식 테마 가이드 공통 UI
@@ -380,7 +380,7 @@ python -m batch.run_scheduler
 ```bash
 python -m batch.run_once
 # 점검만: python -m batch.run_once --dry-run
-# 특정 달: python -m batch.run_once --year 2026 --month 7
+# 파일 스탬프 연·월 지정: python -m batch.run_once --year 2026 --month 7
 ```
 
 ### 6. 수동 데이터 크롤링 및 업데이트 (선택 사항)

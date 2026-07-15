@@ -1,4 +1,4 @@
-"""Shared CSV cleansing for manual runs and the monthly batch."""
+"""Shared CSV cleansing for manual runs and the daily batch."""
 from __future__ import annotations
 
 import glob

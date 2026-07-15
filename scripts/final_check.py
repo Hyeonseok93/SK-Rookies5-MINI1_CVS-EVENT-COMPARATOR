@@ -115,7 +115,7 @@ def main() -> int:
     ok("history roles filtered", [h["role"] for h in hist] == ["user", "assistant"])
 
     section("C. FEATURES")
-    from batch.script.crawl_batch_script import get_next_month_data_batch
+    from batch.script.crawl_batch_script import run_daily_data_batch
     from scraper.base import save_products
     from utils.brand import BRAND_COLORS, get_brand_color, normalize_brand
     from utils.data_cleaner_batch import _latest_per_brand
@@ -169,7 +169,7 @@ def main() -> int:
 
     c1, g1 = Path(cleaned_path()), Path(categorized_path())
     m1 = (c1.stat().st_mtime if c1.exists() else None, g1.stat().st_mtime if g1.exists() else None)
-    dok = get_next_month_data_batch(2026, 7, datetime.now(), dry_run=True)
+    dok = run_daily_data_batch(2026, 7, datetime.now(), dry_run=True)
     m2 = (c1.stat().st_mtime if c1.exists() else None, g1.stat().st_mtime if g1.exists() else None)
     ok("dry-run returns True", dok is True)
     ok("dry-run does not mutate catalog", m1 == m2)
@@ -178,7 +178,7 @@ def main() -> int:
     f1 = os.path.join(td, "CU_259901.csv")
     open(f1, "w", encoding="utf-8").write("x")
     sel = _latest_per_brand([f1], "2607", allow_fallback=False)
-    ok("cleaner no YYMM fallback", sel == [])
+    ok("cleaner no stamp-prefix fallback", sel == [])
     shutil.rmtree(td, ignore_errors=True)
 
     req = (ROOT / "requirements.txt").read_text(encoding="utf-8")

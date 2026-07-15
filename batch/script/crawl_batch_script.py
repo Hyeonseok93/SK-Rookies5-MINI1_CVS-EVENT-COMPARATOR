@@ -58,7 +58,7 @@ def _yymm_prefix(year: int, month: int) -> str:
 
 
 def _brand_csv_ready(data_dir: str, brand: str, yymm: str) -> bool:
-    """True if at least one brand CSV for the target YYMM exists and is non-empty."""
+    """True if at least one brand CSV with the file-name YYMM prefix exists and is non-empty."""
     prefix = f"{brand}_{yymm}"
     try:
         for name in os.listdir(data_dir):
@@ -71,9 +71,12 @@ def _brand_csv_ready(data_dir: str, brand: str, yymm: str) -> bool:
     return False
 
 
-def get_next_month_data_batch(year: int, month: int, run_time: datetime, dry_run: bool = False) -> bool:
+def run_daily_data_batch(year: int, month: int, run_time: datetime, dry_run: bool = False) -> bool:
     """
-    메인 배치 함수.
+    일간 데이터 최신화 배치 (크롤 → 정제 → 분류 → 뉴스).
+
+    year/month는 스케줄 주기가 아니라 raw CSV 파일명 접두사(YYMM)용입니다.
+    기본(스케줄러)은 실행 당일 KST의 연·월을 넣습니다.
     브랜드 크롤이 하나라도 실패하면 clean/categorize를 건너뛰고 False를 반환합니다.
     """
     # 현재 작업 디렉토리를 프로젝트 루트로 변경
@@ -90,7 +93,10 @@ def get_next_month_data_batch(year: int, month: int, run_time: datetime, dry_run
 
     # 2. 시작 로그 기록
     write_log('=== BATCH START ===', run_time)
-    write_log(f'Target Month: {year}-{month} (yymm={yymm}) | Batch ID Time: {run_time.strftime("%H:%M:%S")}', run_time)
+    write_log(
+        f'File stamp period: {year}-{month:02d} (yymm={yymm}) | Run time: {run_time.strftime("%H:%M:%S")}',
+        run_time,
+    )
     write_log(f'Data directory: {data_dir}', run_time)
 
     # dry-run: 크롤/정제/분류/뉴스 전부 스킵 (카탈로그 오염 방지)
@@ -99,7 +105,7 @@ def get_next_month_data_batch(year: int, month: int, run_time: datetime, dry_run
         write_log('=== BATCH DRY-RUN COMPLETE ===', run_time)
         return True
 
-    # 파일명 스탬프 = 대상 연월 + 실행일 (ready 체크의 yymm prefix와 일치)
+    # 파일명 스탬프 = 연월 접두사 + 실행일 (ready 체크의 yymm prefix와 일치)
     file_stamp = f"{yymm}{run_time.day:02d}"
     os.environ["BATCH_FILE_STAMP"] = file_stamp
     write_log(f'BATCH_FILE_STAMP={file_stamp}', run_time)
