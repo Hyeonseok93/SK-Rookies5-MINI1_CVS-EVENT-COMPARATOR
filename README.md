@@ -277,8 +277,6 @@ python -m batch.run_once
 # python -m batch.run_once --dry-run
 ```
 
-흐름·안전장치는 위 **Key Implementation**을 보면 됩니다.
-
 ---
 
 ## 💻 Developers
