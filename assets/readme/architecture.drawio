@@ -1,0 +1,86 @@
+<mxfile host="app.diagrams.net" modified="2026-07-17T00:00:00.000Z" agent="Cursor" version="22.1.0" type="device">
+  <diagram id="cvs-arch" name="CVS Architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="L1" value="" style="rounded=1;fillColor=#f0fdfa;strokeColor=#99f6e4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="920" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="L1t" value="Ingest" style="rounded=1;fillColor=#0f766e;fontColor=#ffffff;fontStyle=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="I1" value="CU" style="rounded=1;fillColor=#ffffff;strokeColor=#2dd4bf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="55" width="70" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="I2" value="GS25" style="rounded=1;fillColor=#ffffff;strokeColor=#2dd4bf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="55" width="80" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="I3" value="7-Eleven" style="rounded=1;fillColor=#ffffff;strokeColor=#2dd4bf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="55" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="I4" value="emart24" style="rounded=1;fillColor=#ffffff;strokeColor=#2dd4bf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="55" width="90" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="I5" value="Brand Scrapers" style="rounded=1;fillColor=#ffffff;strokeColor=#2dd4bf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="610" y="55" width="220" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="L2" value="" style="rounded=1;fillColor=#ecfeff;strokeColor=#a5f3fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="920" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="L2t" value="Batch" style="rounded=1;fillColor=#0e7490;fontColor=#ffffff;fontStyle=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="P1" value="Crawl" style="rounded=1;fillColor=#ffffff;strokeColor=#22d3ee;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="175" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="P2" value="Clean / Merge" style="rounded=1;fillColor=#ffffff;strokeColor=#22d3ee;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="175" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="P3" value="Categorize" style="rounded=1;fillColor=#ffffff;strokeColor=#22d3ee;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="175" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="P4" value="News (Selenium)" style="rounded=1;fillColor=#ffffff;strokeColor=#22d3ee;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="175" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="L3" value="" style="rounded=1;fillColor=#f8fafc;strokeColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="920" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="L3t" value="Data" style="rounded=1;fillColor=#475569;fontColor=#ffffff;fontStyle=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="D1" value="raw CSV" style="rounded=1;fillColor=#ffffff;strokeColor=#94a3b8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="295" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="D2" value="cleaned CSV" style="rounded=1;fillColor=#ffffff;strokeColor=#94a3b8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="295" width="160" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="D3" value="categorized CSV" style="rounded=1;fillColor=#ffffff;strokeColor=#94a3b8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="295" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="L4" value="" style="rounded=1;fillColor=#f0fdfa;strokeColor=#99f6e4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="440" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="L4t" value="App" style="rounded=1;fillColor=#0f766e;fontColor=#ffffff;fontStyle=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="120" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="A1" value="Streamlit UI&#xa;Dashboard · Guides" style="rounded=1;fillColor=#ffffff;strokeColor=#2dd4bf;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="200" y="425" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="L5" value="" style="rounded=1;fillColor=#ecfeff;strokeColor=#a5f3fc;" vertex="1" parent="1">
+          <mxGeometry x="520" y="400" width="440" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="L5t" value="AI" style="rounded=1;fillColor=#0e7490;fontColor=#ffffff;fontStyle=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="520" y="400" width="120" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="AI1" value="Groq Llama 3.3&#xa;Chat · Lite RAG" style="rounded=1;fillColor=#ffffff;strokeColor=#22d3ee;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="680" y="425" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="L1" target="L2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e1l" value="daily 06:00 KST" style="edgeLabel;fontColor=#64748B;fontSize=11;" vertex="1" connectable="0" parent="e1"><mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="L2" target="L3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2l" value="write" style="edgeLabel;fontColor=#64748B;fontSize=11;" vertex="1" connectable="0" parent="e2"><mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
