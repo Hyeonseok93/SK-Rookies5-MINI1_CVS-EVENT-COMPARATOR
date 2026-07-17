@@ -28,7 +28,7 @@
 
 <table width="100%">
 <tr>
-<td align="left">
+<td align="center">
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
@@ -74,7 +74,7 @@
 
 <br>
 
-<table width="100%">
+<table width="92%" align="center">
   <thead>
     <tr>
       <th align="left" width="22%">구분</th>
