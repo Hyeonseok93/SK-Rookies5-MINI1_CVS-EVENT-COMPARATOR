@@ -75,44 +75,47 @@
 
 <br>
 
-<div align="center">
-
-<table width="92%">
+<table width="100%">
   <thead>
     <tr>
-      <th align="left" width="22%">구분</th>
-      <th align="left">기술 · 역할</th>
+      <th align="left">구분</th>
+      <th align="left">기술</th>
+      <th align="left">역할</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td align="left" valign="top"><strong>Dashboard UI</strong></td>
-      <td align="left">Streamlit, Custom CSS<br>멀티 페이지 대시보드, 다크/글래스모피즘 테마</td>
+      <td align="left"><strong>Dashboard UI</strong></td>
+      <td align="left">Streamlit, Custom CSS</td>
+      <td align="left">멀티 페이지 대시보드, 다크/글래스모피즘 테마</td>
     </tr>
     <tr>
-      <td align="left" valign="top"><strong>Visualization</strong></td>
-      <td align="left">Plotly, Folium<br>브랜드 비교 차트, 편의점 지도·클러스터</td>
+      <td align="left"><strong>Visualization</strong></td>
+      <td align="left">Plotly, Folium</td>
+      <td align="left">브랜드 비교 차트, 편의점 지도·클러스터</td>
     </tr>
     <tr>
-      <td align="left" valign="top"><strong>Data Pipeline</strong></td>
-      <td align="left">BeautifulSoup, Requests, Pandas<br>4사 상품 크롤링 → 정제 → 카테고리 분류</td>
+      <td align="left"><strong>Data Pipeline</strong></td>
+      <td align="left">BeautifulSoup, Requests, Pandas</td>
+      <td align="left">4사 상품 크롤링 → 정제 → 카테고리 분류</td>
     </tr>
     <tr>
-      <td align="left" valign="top"><strong>Event News</strong></td>
-      <td align="left">Selenium<br>공식 행사 뉴스 동적 페이지 수집</td>
+      <td align="left"><strong>Event News</strong></td>
+      <td align="left">Selenium</td>
+      <td align="left">공식 행사 뉴스 동적 페이지 수집</td>
     </tr>
     <tr>
-      <td align="left" valign="top"><strong>Batch</strong></td>
-      <td align="left">APScheduler, Loguru<br>매일 06:00(KST) 자동 수집·갱신</td>
+      <td align="left"><strong>Batch</strong></td>
+      <td align="left">APScheduler, Loguru</td>
+      <td align="left">매일 06:00(KST) 자동 수집·갱신</td>
     </tr>
     <tr>
-      <td align="left" valign="top"><strong>AI Chatbot</strong></td>
-      <td align="left">Groq (Llama 3.3) + 로컬 RAG<br>키워드로 상품 CSV를 뽑아 컨텍스트로 주입</td>
+      <td align="left"><strong>AI Chatbot</strong></td>
+      <td align="left">Groq (Llama 3.3) + 로컬 RAG</td>
+      <td align="left">키워드로 상품 CSV를 뽑아 컨텍스트로 주입</td>
     </tr>
   </tbody>
 </table>
-
-</div>
 
 <br>
 
