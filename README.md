@@ -233,7 +233,7 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ---
 
-## ⚙️ 설치 및 실행
+## ⚙️ Getting Started
 
 ### 1. 레포지토리 클론
 
