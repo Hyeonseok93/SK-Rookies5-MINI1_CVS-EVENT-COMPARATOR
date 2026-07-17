@@ -24,50 +24,54 @@
 
 ## 🛠 Built With
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/python.png">
-    <img src="assets/readme/badges/dark/python.png" alt="Python" height="28" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/streamlit.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/streamlit.png">
-    <img src="assets/readme/badges/dark/streamlit.png" alt="Streamlit" height="28" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/pandas.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/pandas.png">
-    <img src="assets/readme/badges/dark/pandas.png" alt="Pandas" height="28" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/plotly.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/plotly.png">
-    <img src="assets/readme/badges/dark/plotly.png" alt="Plotly" height="28" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/selenium.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/selenium.png">
-    <img src="assets/readme/badges/dark/selenium.png" alt="Selenium" height="28" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/beautifulsoup.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/beautifulsoup.png">
-    <img src="assets/readme/badges/dark/beautifulsoup.png" alt="BeautifulSoup" height="28" />
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/groq.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/groq.png">
-    <img src="assets/readme/badges/dark/groq.png" alt="Groq" height="28" />
-  </picture>
-</p>
+<div align="center">
+
+<table>
+<tr>
+<td align="left">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/python.png">
+  <img src="assets/readme/badges/dark/python.png" alt="Python" height="28" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/streamlit.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/streamlit.png">
+  <img src="assets/readme/badges/dark/streamlit.png" alt="Streamlit" height="28" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/pandas.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/pandas.png">
+  <img src="assets/readme/badges/dark/pandas.png" alt="Pandas" height="28" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/plotly.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/plotly.png">
+  <img src="assets/readme/badges/dark/plotly.png" alt="Plotly" height="28" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/selenium.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/selenium.png">
+  <img src="assets/readme/badges/dark/selenium.png" alt="Selenium" height="28" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/beautifulsoup.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/beautifulsoup.png">
+  <img src="assets/readme/badges/dark/beautifulsoup.png" alt="BeautifulSoup" height="28" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/groq.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/groq.png">
+  <img src="assets/readme/badges/dark/groq.png" alt="Groq" height="28" />
+</picture>
 
 <details>
 <summary><strong>기술 스택 상세 보기</strong></summary>
 
-<div align="center">
+<br>
 
-<table align="center">
+<table>
   <thead>
     <tr>
       <th align="left">구분</th>
@@ -109,9 +113,13 @@
   </tbody>
 </table>
 
-</div>
-
 </details>
+
+</td>
+</tr>
+</table>
+
+</div>
 
 ---
 
