@@ -117,7 +117,7 @@
 
 ---
 
-## 🖥️ Preview · [전체 소개는 블로그에서 보기 →](https://bulldog93.tistory.com/45)
+## 🖥️ Preview · [자세히 보기](https://bulldog93.tistory.com/45)
 
 <div align="center">
   <img src="assets/readme/main.png" alt="CVS Event Comparator 홈 화면" width="900" />
