@@ -32,21 +32,22 @@ if st.session_state['event_page'] > total_pages:
 if st.session_state['event_page'] < 1:
     st.session_state['event_page'] = 1
 
-col1, col2, col3 = st.columns([1, 2, 1])
-with col1:
-    if st.button("⬅️ 이전", disabled=(st.session_state['event_page'] <= 1)):
-        st.session_state['event_page'] -= 1
+# 이전/다음이 화면 양끝으로 벌어지지 않게 가운데로 모음 (전체 요약 페이지네이션과 동일 패턴)
+_, c_prev, c_info, c_next, _ = st.columns([3, 1, 2, 1, 3])
+with c_prev:
+    if st.button("⬅️ 이전", disabled=(st.session_state["event_page"] <= 1), use_container_width=True):
+        st.session_state["event_page"] -= 1
         st.rerun()
 
-with col2:
+with c_info:
     st.markdown(
-        f"<div style='text-align: center;'><b>{st.session_state['event_page']} / {total_pages} 페이지</b> (총 {total_items}건)</div>",
+        f"<div style='text-align:center; padding-top:0.35rem;'><b>{st.session_state['event_page']} / {total_pages}</b><br/><span style='color:#888; font-size:0.85rem;'>총 {total_items}건</span></div>",
         unsafe_allow_html=True,
     )
 
-with col3:
-    if st.button("다음 ➡️", disabled=(st.session_state['event_page'] >= total_pages)):
-        st.session_state['event_page'] += 1
+with c_next:
+    if st.button("다음 ➡️", disabled=(st.session_state["event_page"] >= total_pages), use_container_width=True):
+        st.session_state["event_page"] += 1
         st.rerun()
 
 st.markdown("---")
