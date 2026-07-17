@@ -1,49 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="CVS system architecture">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="CVS layered system architecture">
   <defs>
-    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0 1 L9 5 L0 9 z" fill="#94A3B8"/>
+    <marker id="down" viewBox="0 0 10 10" refX="5" refY="8" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L5 9 L10 0 z" fill="#94A3B8"/>
     </marker>
   </defs>
 
-  <!-- Sources -->
-  <rect x="24" y="96" width="168" height="112" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.25"/>
-  <text x="108" y="138" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#0F172A">4 Brand Sites</text>
-  <text x="108" y="162" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">CU · GS25</text>
-  <text x="108" y="182" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">7-Eleven · emart24</text>
+  <!-- Ingestion -->
+  <rect x="40" y="24" width="820" height="100" rx="14" fill="#F0FDFA" stroke="#CCFBF1" stroke-width="1"/>
+  <text x="60" y="48" font-family="Inter, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#0F766E" letter-spacing="0.04em">INGESTION</text>
+  <rect x="60" y="62" width="90" height="40" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="105" y="87" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">CU</text>
+  <rect x="170" y="62" width="90" height="40" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="215" y="87" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">GS25</text>
+  <rect x="280" y="62" width="110" height="40" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="335" y="87" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">7-Eleven</text>
+  <rect x="410" y="62" width="100" height="40" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="460" y="87" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">emart24</text>
+  <rect x="530" y="62" width="300" height="40" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="680" y="87" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Brand Scrapers (custom per site)</text>
+
+  <line x1="450" y1="124" x2="450" y2="148" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#down)"/>
+  <text x="466" y="142" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">scheduled crawl</text>
 
   <!-- Batch -->
-  <rect x="248" y="96" width="176" height="112" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.25"/>
-  <text x="336" y="138" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#0F172A">Batch Pipeline</text>
-  <text x="336" y="162" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">Crawl · Clean</text>
-  <text x="336" y="182" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">Categorize · News</text>
+  <rect x="40" y="152" width="820" height="100" rx="14" fill="#ECFEFF" stroke="#CFFAFE" stroke-width="1"/>
+  <text x="60" y="176" font-family="Inter, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#0E7490" letter-spacing="0.04em">BATCH PIPELINE (06:00 KST)</text>
+  <rect x="60" y="190" width="150" height="40" rx="8" fill="#FFFFFF" stroke="#A5F3FC"/>
+  <text x="135" y="215" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Crawl</text>
+  <rect x="230" y="190" width="150" height="40" rx="8" fill="#FFFFFF" stroke="#A5F3FC"/>
+  <text x="305" y="215" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Clean / Merge</text>
+  <rect x="400" y="190" width="150" height="40" rx="8" fill="#FFFFFF" stroke="#A5F3FC"/>
+  <text x="475" y="215" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Categorize</text>
+  <rect x="570" y="190" width="250" height="40" rx="8" fill="#FFFFFF" stroke="#A5F3FC"/>
+  <text x="695" y="215" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Event News (Selenium)</text>
 
-  <!-- Catalog -->
-  <rect x="480" y="96" width="168" height="112" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.25"/>
-  <text x="564" y="142" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#0F172A">CSV Catalog</text>
-  <text x="564" y="166" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">raw / cleaned</text>
-  <text x="564" y="186" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">categorized</text>
+  <line x1="450" y1="252" x2="450" y2="276" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#down)"/>
+  <text x="466" y="270" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">write catalog</text>
 
-  <!-- Streamlit -->
-  <rect x="728" y="36" width="208" height="88" rx="12" fill="#FFFFFF" stroke="#14B8A6" stroke-width="1.5"/>
-  <text x="832" y="74" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#0F766E">Streamlit App</text>
-  <text x="832" y="98" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">Dashboard · Guides</text>
+  <!-- Storage -->
+  <rect x="40" y="280" width="820" height="88" rx="14" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="60" y="304" font-family="Inter, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#64748B" letter-spacing="0.04em">DATA</text>
+  <rect x="60" y="318" width="160" height="36" rx="8" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="140" y="341" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">raw CSV</text>
+  <rect x="240" y="318" width="180" height="36" rx="8" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="330" y="341" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">cleaned CSV</text>
+  <rect x="440" y="318" width="200" height="36" rx="8" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="540" y="341" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">categorized CSV</text>
 
-  <!-- Groq -->
-  <rect x="728" y="180" width="208" height="88" rx="12" fill="#FFFFFF" stroke="#14B8A6" stroke-width="1.5"/>
-  <text x="832" y="218" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#0F766E">Groq Llama 3.3</text>
-  <text x="832" y="242" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#64748B">Chatbot · Lite RAG</text>
+  <line x1="300" y1="368" x2="300" y2="400" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#down)"/>
+  <line x1="600" y1="368" x2="600" y2="400" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#down)"/>
+  <text x="316" y="392" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">load</text>
+  <text x="616" y="392" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">context</text>
 
-  <!-- arrows -->
-  <line x1="192" y1="152" x2="248" y2="152" stroke="#94A3B8" stroke-width="1.75" marker-end="url(#a)"/>
-  <line x1="424" y1="152" x2="480" y2="152" stroke="#94A3B8" stroke-width="1.75" marker-end="url(#a)"/>
-  <path d="M648 128 C688 128 688 80 728 80" fill="none" stroke="#94A3B8" stroke-width="1.75" marker-end="url(#a)"/>
-  <path d="M648 176 C688 176 688 224 728 224" fill="none" stroke="#94A3B8" stroke-width="1.75" marker-end="url(#a)"/>
+  <!-- App + AI side by side -->
+  <rect x="40" y="404" width="400" height="120" rx="14" fill="#F0FDFA" stroke="#CCFBF1" stroke-width="1"/>
+  <text x="60" y="428" font-family="Inter, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#0F766E" letter-spacing="0.04em">APPLICATION</text>
+  <rect x="60" y="444" width="180" height="52" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="150" y="468" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Streamlit UI</text>
+  <text x="150" y="486" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">Dashboard · Guides</text>
+  <rect x="260" y="444" width="150" height="52" rx="8" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="335" y="475" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Pages</text>
 
-  <text x="220" y="142" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">Scrape</text>
-  <text x="452" y="142" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">ETL</text>
-  <text x="678" y="72" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">Load</text>
-  <text x="668" y="218" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">Context</text>
-
-  <text x="24" y="300" font-family="Inter, Segoe UI, sans-serif" font-size="12" fill="#94A3B8">Daily batch 06:00 KST · UI separated from crawl pipeline</text>
+  <rect x="460" y="404" width="400" height="120" rx="14" fill="#ECFEFF" stroke="#CFFAFE" stroke-width="1"/>
+  <text x="480" y="428" font-family="Inter, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#0E7490" letter-spacing="0.04em">AI ASSIST</text>
+  <rect x="480" y="444" width="200" height="52" rx="8" fill="#FFFFFF" stroke="#A5F3FC"/>
+  <text x="580" y="468" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Groq Llama 3.3</text>
+  <text x="580" y="486" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">Streaming chat</text>
+  <rect x="700" y="444" width="140" height="52" rx="8" fill="#FFFFFF" stroke="#A5F3FC"/>
+  <text x="770" y="468" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Lite RAG</text>
+  <text x="770" y="486" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="11" fill="#64748B">catalog match</text>
 </svg>
