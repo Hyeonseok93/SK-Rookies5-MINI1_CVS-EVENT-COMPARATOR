@@ -121,7 +121,7 @@
 
 <div align="center">
   <img src="assets/readme/preview-home.png" alt="CVS Event Comparator 홈 화면" width="900" />
-  <p>메인보드 — 핫딜 배너 · 시간대별 추천 · 뉴스 피드</p>
+  <p>메인 페이지</p>
 </div>
 
 <div align="center">
