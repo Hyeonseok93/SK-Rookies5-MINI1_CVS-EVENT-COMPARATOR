@@ -62,6 +62,9 @@
   </picture>
 </p>
 
+<details>
+<summary><strong>기술 스택 상세 보기</strong></summary>
+
 <div align="center">
 
 <table align="center">
@@ -107,6 +110,8 @@
 </table>
 
 </div>
+
+</details>
 
 ---
 
