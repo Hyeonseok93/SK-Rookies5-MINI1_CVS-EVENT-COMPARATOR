@@ -212,8 +212,10 @@
 ```text
 SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 ┣━━ 📂 assets/                        # 브랜드 로고 · README용 에셋
-┃   ┣━━ 📂 readme/badges/dark|light/  # README 기술 스택 뱃지 (다크/라이트)
-┃   ┗━━ 🖼️ preview-home.png           # README Preview용 스크린샷
+┃   ┣━━ 📂 readme/
+┃   ┃   ┣━━ 📂 badges/dark|light/     # README 기술 스택 뱃지
+┃   ┃   ┣━━ 🖼️ preview-home.png       # README Preview용 스크린샷
+┃   ┃   ┗━━ 🖼️ architecture.svg       # System Architecture
 ┣━━ 📂 pages/                         # Streamlit 멀티 페이지
 ┣━━ 📂 scraper/                       # 4사 상품 크롤러 + 행사 뉴스(Selenium)
 ┃   ┗━━ 📄 base.py                    # 공통 저장 · 스키마 헬퍼
@@ -229,6 +231,14 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 ┣━━ 📄 requirements.txt
 ┗━━ 📄 .env.example                   # GROQ_API_KEY 예시
 ```
+
+---
+
+## 📊 System Architecture
+
+<div align="center">
+  <img src="assets/readme/architecture.svg" alt="CVS System Architecture" width="900" />
+</div>
 
 ---
 
