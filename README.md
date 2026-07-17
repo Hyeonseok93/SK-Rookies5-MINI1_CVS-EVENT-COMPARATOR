@@ -233,54 +233,6 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ---
 
-## 📊 System Architecture
-
-```mermaid
-flowchart TB
-  classDef node fill:#0D1117,stroke:#8B949E,color:#E6EDF3,stroke-width:1px
-  classDef accent fill:#0D1117,stroke:#5EEAD4,color:#E6EDF3,stroke-width:1.5px
-
-  subgraph Ingest["Ingestion"]
-    direction LR
-    CU:::node
-    GS25:::node
-    Seven["7-Eleven"]:::node
-    Emart["emart24"]:::node
-  end
-
-  subgraph Batch["Batch Pipeline · 06:00 KST"]
-    direction LR
-    Crawl:::node --> Clean["Clean / Merge"]:::node --> Categorize:::node --> News["Event News · Selenium"]:::node
-  end
-
-  subgraph Catalog["CSV Catalog"]
-    direction LR
-    Raw["raw"]:::node
-    Cleaned["cleaned"]:::node
-    Categorized["categorized"]:::node
-  end
-
-  subgraph App["Application"]
-    Streamlit["Streamlit UI"]:::accent
-  end
-
-  subgraph AI["AI Assist"]
-    Groq["Groq Llama 3.3 · Lite RAG"]:::accent
-  end
-
-  CU --> Crawl
-  GS25 --> Crawl
-  Seven --> Crawl
-  Emart --> Crawl
-  News --> Raw
-  Clean --> Cleaned
-  Categorize --> Categorized
-  Categorized --> Streamlit
-  Categorized --> Groq
-```
-
----
-
 ## ⚙️ 설치 및 실행
 
 ### 1. 레포지토리 클론
