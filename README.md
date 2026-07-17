@@ -237,38 +237,35 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ```mermaid
 flowchart TB
-  classDef brand fill:#115E59,stroke:#5EEAD4,color:#ECFDF5,stroke-width:1.5px
-  classDef step fill:#155E75,stroke:#67E8F9,color:#ECFEFF,stroke-width:1.5px
-  classDef store fill:#1E293B,stroke:#94A3B8,color:#F8FAFC,stroke-width:1.5px
-  classDef ui fill:#0F766E,stroke:#2DD4BF,color:#FFFFFF,stroke-width:2px
-  classDef llm fill:#0E7490,stroke:#22D3EE,color:#FFFFFF,stroke-width:2px
+  classDef node fill:#0D1117,stroke:#8B949E,color:#E6EDF3,stroke-width:1px
+  classDef accent fill:#0D1117,stroke:#5EEAD4,color:#E6EDF3,stroke-width:1.5px
 
   subgraph Ingest["Ingestion"]
     direction LR
-    CU:::brand
-    GS25:::brand
-    Seven["7-Eleven"]:::brand
-    Emart["emart24"]:::brand
+    CU:::node
+    GS25:::node
+    Seven["7-Eleven"]:::node
+    Emart["emart24"]:::node
   end
 
   subgraph Batch["Batch Pipeline · 06:00 KST"]
     direction LR
-    Crawl:::step --> Clean["Clean / Merge"]:::step --> Categorize:::step --> News["Event News · Selenium"]:::step
+    Crawl:::node --> Clean["Clean / Merge"]:::node --> Categorize:::node --> News["Event News · Selenium"]:::node
   end
 
   subgraph Catalog["CSV Catalog"]
     direction LR
-    Raw["raw"]:::store
-    Cleaned["cleaned"]:::store
-    Categorized["categorized"]:::store
+    Raw["raw"]:::node
+    Cleaned["cleaned"]:::node
+    Categorized["categorized"]:::node
   end
 
   subgraph App["Application"]
-    Streamlit["Streamlit UI"]:::ui
+    Streamlit["Streamlit UI"]:::accent
   end
 
   subgraph AI["AI Assist"]
-    Groq["Groq Llama 3.3 · Lite RAG"]:::llm
+    Groq["Groq Llama 3.3 · Lite RAG"]:::accent
   end
 
   CU --> Crawl
