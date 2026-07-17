@@ -237,31 +237,38 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ```mermaid
 flowchart TB
+  classDef brand fill:#115E59,stroke:#5EEAD4,color:#ECFDF5,stroke-width:1.5px
+  classDef step fill:#155E75,stroke:#67E8F9,color:#ECFEFF,stroke-width:1.5px
+  classDef store fill:#1E293B,stroke:#94A3B8,color:#F8FAFC,stroke-width:1.5px
+  classDef ui fill:#0F766E,stroke:#2DD4BF,color:#FFFFFF,stroke-width:2px
+  classDef llm fill:#0E7490,stroke:#22D3EE,color:#FFFFFF,stroke-width:2px
+
   subgraph Ingest["Ingestion"]
-    CU
-    GS25
-    Seven["7-Eleven"]
-    Emart["emart24"]
+    direction LR
+    CU:::brand
+    GS25:::brand
+    Seven["7-Eleven"]:::brand
+    Emart["emart24"]:::brand
   end
 
   subgraph Batch["Batch Pipeline · 06:00 KST"]
-    Crawl --> Clean["Clean / Merge"]
-    Clean --> Categorize
-    Categorize --> News["Event News · Selenium"]
+    direction LR
+    Crawl:::step --> Clean["Clean / Merge"]:::step --> Categorize:::step --> News["Event News · Selenium"]:::step
   end
 
-  subgraph Data["CSV Catalog"]
-    Raw["raw"]
-    Cleaned["cleaned"]
-    Categorized["categorized"]
+  subgraph Catalog["CSV Catalog"]
+    direction LR
+    Raw["raw"]:::store
+    Cleaned["cleaned"]:::store
+    Categorized["categorized"]:::store
   end
 
   subgraph App["Application"]
-    Streamlit["Streamlit UI"]
+    Streamlit["Streamlit UI"]:::ui
   end
 
   subgraph AI["AI Assist"]
-    Groq["Groq Llama 3.3 · Lite RAG"]
+    Groq["Groq Llama 3.3 · Lite RAG"]:::llm
   end
 
   CU --> Crawl
