@@ -24,10 +24,7 @@
 
 ## 🛠 Built With
 
-<table width="100%">
-<tr>
-<td>
-
+<p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
   <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/python.png">
@@ -63,24 +60,58 @@
   <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/groq.png">
   <img src="assets/readme/badges/dark/groq.png" alt="Groq" height="28" />
 </picture>
-
-</td>
-</tr>
-</table>
+</p>
 
 <details>
 <summary><strong>기술 스택 상세 보기</strong></summary>
 
 <br>
 
-| 구분 | 기술 | 역할 |
-| --- | --- | --- |
-| **Dashboard UI** | Streamlit, Custom CSS | 멀티 페이지 대시보드, 다크/글래스모피즘 테마 |
-| **Visualization** | Plotly, Folium | 브랜드 비교 차트, 편의점 지도·클러스터 |
-| **Data Pipeline** | BeautifulSoup, Requests, Pandas | 4사 상품 크롤링 → 정제 → 카테고리 분류 |
-| **Event News** | Selenium | 공식 행사 뉴스 동적 페이지 수집 |
-| **Batch** | APScheduler, Loguru | 매일 06:00(KST) 자동 수집·갱신 |
-| **AI Chatbot** | Groq (Llama 3.3) + 로컬 RAG | 키워드로 상품 CSV를 뽑아 컨텍스트로 주입 |
+<div align="center">
+
+<table align="center">
+  <thead>
+    <tr>
+      <th align="left">구분</th>
+      <th align="left">기술</th>
+      <th align="left">역할</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="left"><strong>Dashboard UI</strong></td>
+      <td align="left">Streamlit, Custom CSS</td>
+      <td align="left">멀티 페이지 대시보드, 다크/글래스모피즘 테마</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Visualization</strong></td>
+      <td align="left">Plotly, Folium</td>
+      <td align="left">브랜드 비교 차트, 편의점 지도·클러스터</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Data Pipeline</strong></td>
+      <td align="left">BeautifulSoup, Requests, Pandas</td>
+      <td align="left">4사 상품 크롤링 → 정제 → 카테고리 분류</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Event News</strong></td>
+      <td align="left">Selenium</td>
+      <td align="left">공식 행사 뉴스 동적 페이지 수집</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>Batch</strong></td>
+      <td align="left">APScheduler, Loguru</td>
+      <td align="left">매일 06:00(KST) 자동 수집·갱신</td>
+    </tr>
+    <tr>
+      <td align="left"><strong>AI Chatbot</strong></td>
+      <td align="left">Groq (Llama 3.3) + 로컬 RAG</td>
+      <td align="left">키워드로 상품 CSV를 뽑아 컨텍스트로 주입</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
 
 </details>
 
