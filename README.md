@@ -28,8 +28,9 @@
 
 <table width="100%">
 <tr>
-<td align="center">
+<td align="left">
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
   <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/python.png">
@@ -65,8 +66,8 @@
   <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/groq.png">
   <img src="assets/readme/badges/dark/groq.png" alt="Groq" height="28" />
 </picture>
+</p>
 
-<br>
 <br>
 
 <details>
@@ -74,7 +75,9 @@
 
 <br>
 
-<table width="92%" align="center">
+<div align="center">
+
+<table width="92%">
   <thead>
     <tr>
       <th align="left" width="22%">구분</th>
@@ -109,7 +112,13 @@
   </tbody>
 </table>
 
+</div>
+
+<br>
+
 </details>
+
+<br>
 
 </td>
 </tr>
