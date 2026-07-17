@@ -212,10 +212,9 @@
 ```text
 SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 ┣━━ 📂 assets/                        # 브랜드 로고 · README용 에셋
-┃   ┣━━ 📂 readme/
-┃   ┃   ┣━━ 📂 badges/dark|light/     # README 기술 스택 뱃지
-┃   ┃   ┣━━ 🖼️ preview-home.png       # README Preview용 스크린샷
-┃   ┃   ┗━━ 🖼️ architecture.svg       # System Architecture
+┃   ┗━━ 📂 readme/
+┃       ┣━━ 📂 badges/dark|light/     # README 기술 스택 뱃지
+┃       ┗━━ 🖼️ preview-home.png       # README Preview용 스크린샷
 ┣━━ 📂 pages/                         # Streamlit 멀티 페이지
 ┣━━ 📂 scraper/                       # 4사 상품 크롤러 + 행사 뉴스(Selenium)
 ┃   ┗━━ 📄 base.py                    # 공통 저장 · 스키마 헬퍼
@@ -236,9 +235,45 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 
 ## 📊 System Architecture
 
-<div align="center">
-  <img src="assets/readme/architecture.svg" alt="CVS System Architecture" width="900" />
-</div>
+```mermaid
+flowchart TB
+  subgraph Ingest["Ingestion"]
+    CU
+    GS25
+    Seven["7-Eleven"]
+    Emart["emart24"]
+  end
+
+  subgraph Batch["Batch Pipeline · 06:00 KST"]
+    Crawl --> Clean["Clean / Merge"]
+    Clean --> Categorize
+    Categorize --> News["Event News · Selenium"]
+  end
+
+  subgraph Data["CSV Catalog"]
+    Raw["raw"]
+    Cleaned["cleaned"]
+    Categorized["categorized"]
+  end
+
+  subgraph App["Application"]
+    Streamlit["Streamlit UI"]
+  end
+
+  subgraph AI["AI Assist"]
+    Groq["Groq Llama 3.3 · Lite RAG"]
+  end
+
+  CU --> Crawl
+  GS25 --> Crawl
+  Seven --> Crawl
+  Emart --> Crawl
+  News --> Raw
+  Clean --> Cleaned
+  Categorize --> Categorized
+  Categorized --> Streamlit
+  Categorized --> Groq
+```
 
 ---
 
