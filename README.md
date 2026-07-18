@@ -129,7 +129,7 @@
 <table align="center">
   <thead>
     <tr>
-      <th align="left">메뉴</th>
+      <th align="left">화면</th>
       <th align="left">설명</th>
     </tr>
   </thead>
@@ -234,6 +234,11 @@ SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
 ---
 
 ## ⚙️ Getting Started
+
+### Prerequisites
+
+- Python 3.10 이상
+- Google Chrome (행사 뉴스 수집 Selenium용)
 
 ### 1. 레포지토리 클론
 
