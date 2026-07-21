@@ -26,39 +26,39 @@
 
 <p>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/python.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/python.png">
-  <img src="assets/readme/badges/dark/python.png" alt="Python" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/python.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/python.png">
+  <img src=".github/readme/badges/dark/python.png" alt="Python" height="28" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/streamlit.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/streamlit.png">
-  <img src="assets/readme/badges/dark/streamlit.png" alt="Streamlit" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/streamlit.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/streamlit.png">
+  <img src=".github/readme/badges/dark/streamlit.png" alt="Streamlit" height="28" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/pandas.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/pandas.png">
-  <img src="assets/readme/badges/dark/pandas.png" alt="Pandas" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/pandas.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/pandas.png">
+  <img src=".github/readme/badges/dark/pandas.png" alt="Pandas" height="28" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/plotly.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/plotly.png">
-  <img src="assets/readme/badges/dark/plotly.png" alt="Plotly" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/plotly.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/plotly.png">
+  <img src=".github/readme/badges/dark/plotly.png" alt="Plotly" height="28" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/selenium.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/selenium.png">
-  <img src="assets/readme/badges/dark/selenium.png" alt="Selenium" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/selenium.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/selenium.png">
+  <img src=".github/readme/badges/dark/selenium.png" alt="Selenium" height="28" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/beautifulsoup.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/beautifulsoup.png">
-  <img src="assets/readme/badges/dark/beautifulsoup.png" alt="BeautifulSoup" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/beautifulsoup.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/beautifulsoup.png">
+  <img src=".github/readme/badges/dark/beautifulsoup.png" alt="BeautifulSoup" height="28" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/badges/dark/groq.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/badges/light/groq.png">
-  <img src="assets/readme/badges/dark/groq.png" alt="Groq" height="28" />
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/badges/dark/groq.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/badges/light/groq.png">
+  <img src=".github/readme/badges/dark/groq.png" alt="Groq" height="28" />
 </picture>
 </p>
 
@@ -120,7 +120,7 @@
 ## 🖥️ Preview · [자세히 보기](https://bulldog93.tistory.com/45)
 
 <div align="center">
-  <img src="assets/readme/preview-home.png" alt="CVS Event Comparator 홈 화면" width="900" />
+  <img src=".github/readme/preview-home.png" alt="CVS Event Comparator 홈 화면" width="900" />
   <p>메인 페이지</p>
 </div>
 
@@ -219,10 +219,10 @@
 
 ```text
 SK-Rookies5-MINI1_CVS-EVENT-COMPARATOR/
-┣━━ 📂 assets/                        # 브랜드 로고 · README용 에셋
-┃   ┗━━ 📂 readme/
-┃       ┣━━ 📂 badges/dark|light/     # README 기술 스택 뱃지
-┃       ┗━━ 🖼️ preview-home.png       # README Preview용 스크린샷
+┣━━ 📂 .github/readme/                # README 전용 에셋
+┃   ┣━━ 📂 badges/dark|light/         # README 기술 스택 뱃지
+┃   ┗━━ 🖼️ preview-home.png           # README Preview용 스크린샷
+┣━━ 📂 assets/                        # 앱용 브랜드 로고
 ┣━━ 📂 pages/                         # Streamlit 멀티 페이지
 ┣━━ 📂 scraper/                       # 4사 상품 크롤러 + 행사 뉴스(Selenium)
 ┃   ┗━━ 📄 base.py                    # 공통 저장 · 스키마 헬퍼
